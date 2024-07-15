@@ -2,7 +2,7 @@ const express=require('express')
 const cors=require('cors')
 require('dotenv').config()
 const connectDB=require('./config/connectDB')
-
+const router=require('./routes/UserRoutes')
 
 const app=express()
 app.use(cors({
@@ -16,6 +16,9 @@ app.get('/',(req,res)=>{
         message:"server running at "+PORT
     })
 })
+app.use('/api',router)
+
+
 connectDB().then(()=>{
     app.listen(PORT,()=>{
         console.log("server running at "+PORT);
