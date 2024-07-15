@@ -3,15 +3,16 @@ import { initializeApp } from "firebase/app";
 import {getStorage} from "firebase/storage"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
+require('dotenv').config()
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAuHG1dh5FJkudgLo0VNbcVIR1R2W7INAo",
-  authDomain: "uploadingfile-1f51f.firebaseapp.com",
-  projectId: "uploadingfile-1f51f",
-  storageBucket: "uploadingfile-1f51f.appspot.com",
-  messagingSenderId: "103426570948",
-  appId: "1:103426570948:web:13302f4ae047871aeb6791"
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID
 };
 
 // Initialize Firebase
