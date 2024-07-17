@@ -3,7 +3,8 @@ const { storage } = require('../firebase');
 const { ref, uploadBytes, getDownloadURL } = require('firebase/storage');
 const {v4:uuid}=require("uuid")
 const bcryptjs=require('bcryptjs')
-const jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken');
+const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
 
 //register
 const registerUser=async(req,res)=>{
@@ -81,6 +82,7 @@ const cheackEmail= async(req,res)=>{
         })
     }
 }
+//cheack Password
 const checkPassword=async(req,res)=>{
     try {
         const {password,userID}=req.body;
@@ -114,4 +116,45 @@ const checkPassword=async(req,res)=>{
         })
     }
 }
-module.exports={registerUser,cheackEmail,checkPassword}
+const userDetails=async(req,res)=>{
+    try {
+        
+        const token=req.cookies.token || ""
+        if(!token){
+            return res.status(500).json({
+                message:"User not Loged in",
+                error:true
+            })
+        }
+        const userID=await getUserDetailsFromToken(token)
+        const user=await User.findById(userID).select('-password')
+        return res.status(200).json({
+            message:"User Details",
+            data:user
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+const logout=async(req,res)=>{
+    try {
+        const cookieOptions={
+            http:true,
+            secure:false,
+            expires: new Date(0)
+        }
+        return res.cookie('token','',cookieOptions).status(200).json({
+            message:"session out",
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout}
