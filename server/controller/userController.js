@@ -1,6 +1,6 @@
 const User = require("../models/UserModel");
 const { storage } = require('../firebase'); 
-const { ref, uploadBytes, getDownloadURL } = require('firebase/storage');
+const { ref, uploadBytes, getDownloadURL,deleteObject } = require('firebase/storage');
 const {v4:uuid}=require("uuid")
 const bcryptjs=require('bcryptjs')
 const jwt=require('jsonwebtoken');
@@ -96,7 +96,6 @@ const checkPassword=async(req,res)=>{
         }else{
             const tokendata={
                 id:user._id,
-                email:user.email
             }
             const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{expiresIn:'1d'})
             const cookieOptions={
@@ -116,6 +115,7 @@ const checkPassword=async(req,res)=>{
         })
     }
 }
+//UserDetail
 const userDetails=async(req,res)=>{
     try {
         
@@ -139,6 +139,7 @@ const userDetails=async(req,res)=>{
         })
     }
 }
+//Logout
 const logout=async(req,res)=>{
     try {
         const cookieOptions={
@@ -157,4 +158,96 @@ const logout=async(req,res)=>{
         })
     }
 }
-module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout}
+//update profile_pic
+const updateProfilePic=async(req,res)=>{
+    try {
+        const {profile_pic}=req.files;
+        const token=req.cookies.token || ""
+        const userID=await getUserDetailsFromToken(token)
+        if(!profile_pic){
+            return res.status(500).json({
+                message:"Image not found",
+                error:true
+            })     
+        }
+        let updateUser;
+        if(userID){
+            const userInfo=await User.findById(userID)
+            const oldProfilePic=userInfo.profile_pic
+
+            //Delete Previous Profile pic
+            const pathStart = oldProfilePic.indexOf("/o/") + 3;
+            const pathEnd = oldProfilePic.indexOf("?alt=");
+            const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
+            const fileRef = ref(storage, filePath);
+            await deleteObject(fileRef);
+            
+
+            //Insert new Profile pic
+            const filename=profile_pic.name;
+            const spittedFilename=filename.split('.')
+            const newName=spittedFilename[0]+uuid()+"."+spittedFilename[spittedFilename.length-1]
+            const imageRef = ref(storage, `ChatApp/${newName}`);
+            const metadata = {
+                contentType: profile_pic.mimetype,
+            };
+            const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            updateUser=await User.updateOne({_id:userID},{profile_pic:downloadURL})
+        }
+        return res.json({
+            message:"Profile Pic is Updated",
+            data:updateUser,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+//Update User details
+const updateUser=async(req,res)=>{
+    try {
+        const token=req.cookies.token || ""
+        const user=await getUserDetailsFromToken(token)
+        const {name,email,password}=req.body;
+        const updates={};
+        if(name){
+            updates.name=name;
+        }
+        if(email){
+            updates.email=email;
+        }
+        if(password){
+            const salt=await bcryptjs.genSalt(10)
+            const hashedPassword=await bcryptjs.hash(password,salt)
+            updates.password=hashedPassword;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(user, updates, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({
+              message: "User not found",
+              error: true
+            });
+        }
+
+        return res.status(200).json({
+            message: "User information updated successfully",
+            user: updatedUser,
+            error: false
+        });
+        
+
+
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+
+module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser}
