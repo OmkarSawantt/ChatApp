@@ -73,13 +73,13 @@ const cheackEmail= async(req,res)=>{
 //cheack Password
 const checkPassword=async(req,res)=>{
     try {
-        const {password,userID}=req.body;
+        const {userID,password}=req.body;
         const user=await User.findById(userID)
         const verifyPass=await bcryptjs.compare(password,user.password)
         if(!verifyPass){
             return res.status(400).json({
                 message:"Please Check Password",
-                success:true
+                error:true
             })
         }else{
             const tokendata={

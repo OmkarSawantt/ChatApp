@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { registerUser } from '../Actions/UserActions'
-
+import toast from 'react-hot-toast'
+import { LuUserCircle } from "react-icons/lu";
 const Register = () => {
   const [data,setData]=useState({
     name:'',
@@ -22,17 +23,31 @@ const Register = () => {
     e.preventDefault()
     e.stopPropagation()
     registerUser(data).then((res) => {
-      alert("User is Created")
-      navigate('/')
+      if(res.error){
+        toast.error(res.message)
+      }else{
+        toast.success(res.message)
+        setData({
+          name:'',
+          email:'',
+          password:'',
+        })
+        navigate('/email')
+      }
+
     }).catch((err) => {
-      alert("Something went wrong")
+      const errorMessage = err.message || 'Something went wrong. Please try again.';
+      toast.error(errorMessage);
     });
 
   }
   return (
     <div className='mt-5'>
-      <div className='bg-white w-full max-w-sm  rounded overflow-hidden p-4 mx-auto'>
-        <h3 className='text-center text-2xl text-primary font-bold'>Welcome to Chat App !</h3>
+      <div className='bg-white w-full max-w-sm  rounded overflow-hidden shadow-lg p-4 mx-auto'>
+        <div className='w-fit mx-auto mb-2'>
+          <LuUserCircle size={80}/>
+        </div>
+        <h3 className='text-xl text-primary font-bold mb-2'>Welcome to Chat App !</h3>
 
         <form onSubmit={handleSubmit} className='grid gap-4'>
           <div className='flex flex-col gap-1'>
