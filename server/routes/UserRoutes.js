@@ -8,8 +8,8 @@ router.post('/password',checkPassword)
 router.get('/user',userDetails)
 router.get('/logout',logout)
 router.post('/update-user-profile',updateProfilePic)
-router.post('/update-user',updateUser)
-/* 
+router.patch('/update-user',updateUser)
+/*
 router.post('/search-user',searchUser)
 */
 module.exports=router

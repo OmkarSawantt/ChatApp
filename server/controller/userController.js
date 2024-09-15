@@ -1,5 +1,5 @@
 const User = require("../models/UserModel");
-const { storage } = require('../firebase'); 
+const { storage } = require('../firebase');
 const { ref, uploadBytes, getDownloadURL,deleteObject } = require('firebase/storage');
 const {v4:uuid}=require("uuid")
 const bcryptjs=require('bcryptjs')
@@ -10,7 +10,6 @@ const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
 const registerUser=async(req,res)=>{
     try {
         const {name ,email,password}=req.body;
-        const {profile_pic}=req.files;
         const cheackEmail=await User.findOne({email})
         if(cheackEmail){
             return res.status(400).json({
@@ -18,23 +17,12 @@ const registerUser=async(req,res)=>{
                 error:true
             })
         }
-        const filename=profile_pic.name;
-        const spittedFilename=filename.split('.')
-        const newName=spittedFilename[0]+uuid()+"."+spittedFilename[spittedFilename.length-1]
-        const imageRef = ref(storage, `ChatApp/${newName}`);
-        const metadata = {
-            contentType: profile_pic.mimetype,
-        };
-        const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
         const salt=await bcryptjs.genSalt(10)
         const hashedPassword=await bcryptjs.hash(password,salt)
 
         const payLoad={
             name,
             email,
-            profile_pic:downloadURL,
             password:hashedPassword
         }
         const user=new User(payLoad)
@@ -92,7 +80,7 @@ const checkPassword=async(req,res)=>{
             return res.status(400).json({
                 message:"Please Check Password",
                 success:true
-            })            
+            })
         }else{
             const tokendata={
                 id:user._id,
@@ -100,7 +88,8 @@ const checkPassword=async(req,res)=>{
             const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{expiresIn:'1d'})
             const cookieOptions={
                 http:true,
-                secure:false
+                secure:false,
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
             }
             return res.cookie('token',token,cookieOptions).status(200).json({
                 message:"Login Successfull",
@@ -118,7 +107,7 @@ const checkPassword=async(req,res)=>{
 //UserDetail
 const userDetails=async(req,res)=>{
     try {
-        
+
         const token=req.cookies.token || ""
         if(!token){
             return res.status(500).json({
@@ -168,7 +157,7 @@ const updateProfilePic=async(req,res)=>{
             return res.status(500).json({
                 message:"Image not found",
                 error:true
-            })     
+            })
         }
         let updateUser;
         if(userID){
@@ -181,7 +170,7 @@ const updateProfilePic=async(req,res)=>{
             const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
             const fileRef = ref(storage, filePath);
             await deleteObject(fileRef);
-            
+
 
             //Insert new Profile pic
             const filename=profile_pic.name;
@@ -239,7 +228,7 @@ const updateUser=async(req,res)=>{
             user: updatedUser,
             error: false
         });
-        
+
 
 
     } catch (error) {

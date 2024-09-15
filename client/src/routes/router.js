@@ -6,6 +6,7 @@ import CheackPassword from "../pages/CheackPassword";
 import Home from "../pages/Home";
 import Message from "../component/Message";
 import Landing from "../pages/Landing";
+import AuthLayout from "../layout/layout";
 
 const router=createBrowserRouter([
 {
@@ -14,15 +15,15 @@ const router=createBrowserRouter([
     children:[
         {
             path:"register",
-            element:<Register/>
+            element:<AuthLayout><Register></Register></AuthLayout>
         },
         {
             path:"email",
-            element:<CheckEmail/>
+            element:<AuthLayout><CheckEmail></CheckEmail></AuthLayout>
         },
         {
             path:"password",
-            element:<CheackPassword/>
+            element:<AuthLayout><CheackPassword></CheackPassword></AuthLayout>
         },
         {
             path:"",
@@ -33,7 +34,7 @@ const router=createBrowserRouter([
             element:<Home/>,
             children:[
                 {
-                    path:'userId',
+                    path:':userId',
                     element:<Message/>
                 }
             ]
