@@ -39,10 +39,27 @@ export const passwordCheak=async (userData)=>{
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
+      credentials: 'include'
     });
     console.log(res);
 
+    return await res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export const userDetails=async ()=>{
+  try {
+    const res = await fetch(`${ENDPOINT_URL}/user`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    });
     return await res.json();
   } catch (err) {
     console.log(err);
