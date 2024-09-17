@@ -160,17 +160,18 @@ const updateProfilePic=async(req,res)=>{
             })
         }
         let updateUser;
+        let downloadURL;
         if(userID){
             const userInfo=await User.findById(userID)
             const oldProfilePic=userInfo.profile_pic
-
             //Delete Previous Profile pic
-            const pathStart = oldProfilePic.indexOf("/o/") + 3;
-            const pathEnd = oldProfilePic.indexOf("?alt=");
-            const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
-            const fileRef = ref(storage, filePath);
-            await deleteObject(fileRef);
-
+            if(oldProfilePic!==process.env.DEFAUL_AVTAR_URI){
+                const pathStart = oldProfilePic.indexOf("/o/") + 3;
+                const pathEnd = oldProfilePic.indexOf("?alt=");
+                const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
+                const fileRef = ref(storage, filePath);
+                await deleteObject(fileRef);
+            }
 
             //Insert new Profile pic
             const filename=profile_pic.name;
@@ -181,12 +182,13 @@ const updateProfilePic=async(req,res)=>{
                 contentType: profile_pic.mimetype,
             };
             const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
-            const downloadURL = await getDownloadURL(snapshot.ref);
+            downloadURL = await getDownloadURL(snapshot.ref);
             updateUser=await User.updateOne({_id:userID},{profile_pic:downloadURL})
+
         }
         return res.json({
             message:"Profile Pic is Updated",
-            data:updateUser,
+            data:{profile_pic:downloadURL},
             success:true
         })
     } catch (error) {

@@ -3,7 +3,7 @@ import {useLocation, useNavigate } from 'react-router-dom'
 import { passwordCheak } from '../Actions/UserActions'
 import toast from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
-import { setUser } from '../redux/userSlice'
+import { setToken} from '../redux/userSlice'
 
 const CheckPassword = () => {
   const [data, setData] = useState({
@@ -39,9 +39,8 @@ const CheckPassword = () => {
         if (res.error) {
           toast.error(res.message)
         } else {
-          // dispatch(setUser())
-          console.log(res);
-          
+          dispatch(setToken(res.token))
+          localStorage.setItem('token',res.token)
           toast.success(res.message)
           setData({
             id: '',
