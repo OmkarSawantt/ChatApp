@@ -240,5 +240,27 @@ const updateUser=async(req,res)=>{
         })
     }
 }
+const searchUser=async(req,res)=>{
+    try {
+        const {search}=req.body;
+        const query=new RegExp(search,'i','g')
+        const user=await User.find({
+            '$or':[
+                {name:query},
+                {email:query}
+            ]
+        }).select("-password")
 
-module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser}
+        return res.json({
+            message:'all user',
+            data:user,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser}

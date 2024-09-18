@@ -10,6 +10,8 @@ const Home = () => {
   const navigate=useNavigate()
   const location=useLocation()
   const basepath=location.pathname === '/home'
+  console.log(basepath);
+
   const fetchUserDetails= async()=>{
     try {
       const res=await userDetails()
@@ -36,12 +38,15 @@ const Home = () => {
       <section className={`${basepath && "hidden" }`}>
         <Outlet/>
       </section>
-      <div className='lg:flex justify-center items-center flex-col gap-2 hidden'>
-        <div>
-          <img src={logo} width={250} alt="logo" />
+      {basepath && (
+        <div className='lg:flex justify-center items-center flex-col gap-2'>
+          <div>
+            <img src={logo} width={250} alt="logo" />
+          </div>
+          <p className='text-lg mt-2 text-slate-700'>Select User to send message</p>
         </div>
-        <p className='text-lg mt-2 text-slate-700'>Select User to send message</p>
-      </div>
+      )}
+
     </div>
   )
 }

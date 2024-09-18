@@ -111,3 +111,21 @@ export const updateUser = async (userData) => {
     console.log(err);
   }
 };
+
+
+export const searchUserAction=async (userData)=>{
+  try {
+    const res = await fetch(`${ENDPOINT_URL}/search-user`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(userData),
+      credentials: 'include'
+    });
+    return await res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
