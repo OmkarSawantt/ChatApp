@@ -64,7 +64,7 @@ export const userDetails=async ()=>{
 export const logoutUser = async () => {
   try {
     const res = await fetch(`${ENDPOINT_URL}/logout`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'

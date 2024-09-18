@@ -92,7 +92,7 @@ const checkPassword=async(req,res)=>{
                 expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
             }
             return res.cookie('token',token,cookieOptions).status(200).json({
-                message:"Login Successfull",
+                message:"You have been successfully logged in!",
                 token:token,
                 success:true
             })
@@ -110,9 +110,9 @@ const userDetails=async(req,res)=>{
 
         const token=req.cookies.token || ""
         if(!token){
-            return res.status(500).json({
+            return res.json({
                 message:"User not Loged in",
-                error:true
+                logout:true,
             })
         }
         const userID=await getUserDetailsFromToken(token)
@@ -137,7 +137,7 @@ const logout=async(req,res)=>{
             expires: new Date(0)
         }
         return res.cookie('token','',cookieOptions).status(200).json({
-            message:"session out",
+            message:"You have successfully logged out!",
             success:true
         })
     } catch (error) {
