@@ -4,7 +4,8 @@ const fileUpload = require('express-fileupload');
 require('dotenv').config()
 const connectDB=require('./config/connectDB')
 const router=require('./routes/UserRoutes')
-const app=express()
+const {app,server}=require('./socket/index')
+// const app=express()
 const cookieParser=require('cookie-parser')
 app.use(cors({
     origin:process.env.FRONTEND_URL,
@@ -25,7 +26,7 @@ app.use('/api',router)
 
 
 connectDB().then(()=>{
-    app.listen(PORT,()=>{
+    server.listen(PORT,()=>{
         console.log("server running at "+PORT);
     })
 })

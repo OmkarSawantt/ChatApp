@@ -1,7 +1,7 @@
 import { ENDPOINT_URL } from "../constants/constant";
 export const registerUser=async (userDetails)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/register`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/register`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -16,7 +16,7 @@ export const registerUser=async (userDetails)=>{
 }
 export const email=async (email)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/email`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/email`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -31,7 +31,7 @@ export const email=async (email)=>{
 }
 export const passwordCheak=async (userData)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/password`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/password`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -48,7 +48,7 @@ export const passwordCheak=async (userData)=>{
 
 export const userDetails=async ()=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/user`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/user`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -63,7 +63,7 @@ export const userDetails=async ()=>{
 }
 export const logoutUser = async () => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/logout`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/logout`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -80,7 +80,7 @@ export const logoutUser = async () => {
 // Update Profile Picture
 export const updateProfilePic = async (formData) => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/update-user-profile`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/update-user-profile`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -97,7 +97,7 @@ export const updateProfilePic = async (formData) => {
 // Update User Details
 export const updateUser = async (userData) => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/update-user`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/update-user`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json',
@@ -115,7 +115,7 @@ export const updateUser = async (userData) => {
 
 export const searchUserAction=async (userData)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/search-user`, {
+    const res = await fetch(`${ENDPOINT_URL}/api/search-user`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

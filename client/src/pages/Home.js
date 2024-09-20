@@ -5,6 +5,9 @@ import { userDetails } from '../Actions/UserActions';
 import { logout, setUser } from '../redux/userSlice';
 import Slidebar from '../component/Slidebar';
 import logo from '../Assets/logo1.png'
+import io from 'socket.io-client'
+import { ENDPOINT_URL } from '../constants/constant';
+
 const Home = () => {
   const dispatch=useDispatch()
   const navigate=useNavigate()
@@ -28,6 +31,18 @@ const Home = () => {
   useEffect(() => {
     fetchUserDetails()
   })
+
+  useEffect(() => {
+    const socketConnection=io(ENDPOINT_URL,{
+      auth:{
+        token: localStorage.getItem('token')
+      }
+    })
+    return ()=>{
+      socketConnection.disconnect()
+    }
+  })
+
 
   return (
     <div className='grid lg:grid-cols-[300px,1fr] h-screen max-h-screen'>
