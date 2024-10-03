@@ -25,7 +25,7 @@ const SearchUser = ({ onclose }) => {
   }, [searchInput]);
 
   return (
-    <div className='fixed top-0 bottom-0 left-0 right-0 p-2 bg-gray-700 bg-opacity-50'>
+    <div className='fixed top-0 bottom-0 left-0 right-0 p-2 bg-gray-700 bg-opacity-50 z-10'>
       <div className='w-full max-w-lg mx-auto mt-10'>
         <div className='bg-white rounded h-14 overflow-hidden flex'>
           <input
@@ -53,7 +53,7 @@ const SearchUser = ({ onclose }) => {
           )}
         </div>
       </div>
-      <div className='absolute top-0 right-0 text-slate-800 hover:text-primary my-4 mx-4' >
+      <div className='absolute top-0 right-0 text-slate-800 hover:text-primary my-8 mx-16' >
         <button onClick={onclose}>
           <IoClose size={30}/>
         </button>

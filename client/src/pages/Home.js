@@ -1,19 +1,19 @@
 import React,{useEffect} from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { userDetails } from '../Actions/UserActions';
-import { logout, setUser } from '../redux/userSlice';
+import { logout, setOnlineUser, setSocketConnection, setUser } from '../redux/userSlice';
 import Slidebar from '../component/Slidebar';
 import logo from '../Assets/logo1.png'
 import io from 'socket.io-client'
 import { ENDPOINT_URL } from '../constants/constant';
 
 const Home = () => {
+  const user=useSelector(state=>state.user)
   const dispatch=useDispatch()
   const navigate=useNavigate()
   const location=useLocation()
   const basepath=location.pathname === '/home'
-  console.log(basepath);
 
   const fetchUserDetails= async()=>{
     try {
@@ -38,10 +38,14 @@ const Home = () => {
         token: localStorage.getItem('token')
       }
     })
+    socketConnection.on('onlineUser',(data)=>{
+      dispatch(setOnlineUser(data))
+    })
+    dispatch(setSocketConnection(socketConnection))
     return ()=>{
       socketConnection.disconnect()
     }
-  })
+  },[dispatch])
 
 
   return (

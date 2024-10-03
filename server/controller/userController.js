@@ -263,4 +263,51 @@ const searchUser=async(req,res)=>{
         })
     }
 }
-module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser}
+const imageUpload=async(req,res)=>{
+    try {
+        const {image}=req.files;
+        let downloadURL;
+
+        const filename=image.name;
+        const spittedFilename=filename.split('.')
+        const newName=spittedFilename[0]+uuid()+"."+spittedFilename[spittedFilename.length-1]
+        const imageRef = ref(storage, `ChatApp/messages/${newName}`);
+        const metadata = {
+            contentType: image.mimetype,
+        };
+        const snapshot = await uploadBytes(imageRef, image.data, metadata);
+        downloadURL = await getDownloadURL(snapshot.ref);
+        return res.json({
+            message:"Image Uploaded",
+            data:{URL:downloadURL},
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+const imageDelete=async(req,res)=>{
+    try {
+        const {imageUrl}=req.body;
+        console.log(imageUrl);
+
+        const pathStart = imageUrl.indexOf("/o/") + 3;
+        const pathEnd = imageUrl.indexOf("?alt=");
+        const filePath = decodeURIComponent(imageUrl.substring(pathStart, pathEnd));
+        const fileRef = ref(storage, filePath);
+        await deleteObject(fileRef);
+        return res.json({
+            message:"Image Deleted",
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message || error,
+            error:true
+        })
+    }
+}
+module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser,imageUpload,imageDelete}

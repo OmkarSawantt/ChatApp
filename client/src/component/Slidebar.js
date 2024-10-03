@@ -47,7 +47,7 @@ const Slidebar = () => {
         </div>
         <div className='flex flex-col items-center'>
           <button className='mx-auto' title={user.name} onClick={() => setEditUserOpen(true)}>
-            <Avatar imageUrl={user.profile_pic} name={user.name} width={40} height={40} key={user.profile_pic} />
+            <Avatar imageUrl={user.profile_pic} name={user.name} width={40} height={40} key={user.profile_pic} userId={user._id} />
           </button>
           <button title='logout' onClick={handleLogout} className='w-12 h-12 flex justify-center items-center hover:bg-slate-800 rounded-sm text-slate-50'>
             <BiLogOut size={25} className='-ml-2' />

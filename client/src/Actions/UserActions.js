@@ -129,3 +129,19 @@ export const searchUserAction=async (userData)=>{
     console.log(err);
   }
 }
+
+export const imageUpload = async (formData) => {
+  try {
+    const res = await fetch(`${ENDPOINT_URL}/api/image`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+      body: formData,
+      credentials: 'include'
+    });
+    return await res.json();
+  } catch (err) {
+    console.log(err);
+  }
+};

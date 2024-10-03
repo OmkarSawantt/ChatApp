@@ -1,5 +1,5 @@
 const {Router} =require('express')
-const {registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser}=require('../controller/userController')
+const {registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser,imageUpload,imageDelete}=require('../controller/userController')
 const router=Router()
 router.post('/register',registerUser)
 router.post('/email',cheackEmail)
@@ -9,4 +9,6 @@ router.get('/logout',logout)
 router.post('/update-user-profile',updateProfilePic)
 router.patch('/update-user',updateUser)
 router.post('/search-user',searchUser)
+router.post('/image',imageUpload)
+router.delete('/image',imageDelete)
 module.exports=router

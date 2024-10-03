@@ -2,6 +2,7 @@ const express=require('express')
 const {Server}=require('socket.io')
 const http =require('http')
 const getUserDetailsFromToken = require('../helpers/getUserDetailsFromToken')
+const UserModel = require('../models/UserModel')
 
 const app=express()
 
@@ -25,11 +26,27 @@ io.on('connection',async(socket)=>{
   const user=await getUserDetailsFromToken(token)
 
   socket.join(user)
-  onlineUser.add(user?.id)
-
+  onlineUser.add(user)
   io.emit('onlineUser',Array.from(onlineUser))
-  io.on('disconnect',()=>{
+
+  socket.on('message-page',async(userId)=>{
+    console.log('userId',userId);
+    const userDetails=await UserModel.findById(userId).select('-password')
+
+    const payload={
+      _id:userDetails?._id,
+      name:userDetails?.name,
+      email:userDetails?.email,
+      profile_pic:userDetails?.profile_pic,
+      online:onlineUser.has(userId)
+    }
+    socket.emit('message-user',payload)
+  })
+
+  socket.on('disconnect',()=>{
+    onlineUser.delete(user?.id)
     console.log('disconnect user', socket.id);
+
   })
 })
 
