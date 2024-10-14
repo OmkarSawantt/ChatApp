@@ -85,11 +85,11 @@ const checkPassword=async(req,res)=>{
             const tokendata={
                 id:user._id,
             }
-            const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{expiresIn:'1d'})
+            const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{ expiresIn: '10y' })
             const cookieOptions={
                 http:true,
                 secure:false,
-                expires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+                expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000)
             }
             return res.cookie('token',token,cookieOptions).status(200).json({
                 message:"You have been successfully logged in!",
@@ -292,8 +292,6 @@ const imageUpload=async(req,res)=>{
 const imageDelete=async(req,res)=>{
     try {
         const {imageUrl}=req.body;
-        console.log(imageUrl);
-
         const pathStart = imageUrl.indexOf("/o/") + 3;
         const pathEnd = imageUrl.indexOf("?alt=");
         const filePath = decodeURIComponent(imageUrl.substring(pathStart, pathEnd));

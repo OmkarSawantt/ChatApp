@@ -10,7 +10,7 @@ const UserSearchCard = ({ user, onclose }) => {
   };
 
   return (
-    <Link to={`/home/${user._id}`} onClick={handleClick} className='flex items-center gap-2 lg:p-2 border-[2px] border-transparent border-b-slate-400 hover:border-primary rounded-sm z-10'>
+    <Link to={`/home/${user._id}`} onClick={handleClick} className='flex items-center gap-2 lg:p-2 border-[2px] border-transparent border-b-slate-200 hover:bg-slate-200 rounded-sm z-10'>
       <div>
         <Avatar width={50} height={50} imageUrl={user?.profile_pic} userId={user._id}/>
       </div>

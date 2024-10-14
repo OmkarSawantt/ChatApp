@@ -10,5 +10,5 @@ router.post('/update-user-profile',updateProfilePic)
 router.patch('/update-user',updateUser)
 router.post('/search-user',searchUser)
 router.post('/image',imageUpload)
-router.delete('/image',imageDelete)
+router.post('/image-delete',imageDelete)
 module.exports=router

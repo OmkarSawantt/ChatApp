@@ -136,6 +136,7 @@ export const imageUpload = async (formData) => {
       method: 'POST',
       headers: {
         Accept: 'application/json',
+
       },
       body: formData,
       credentials: 'include'
@@ -145,3 +146,19 @@ export const imageUpload = async (formData) => {
     console.log(err);
   }
 };
+export const imageDelete=async (formData)=>{
+  try {
+    const res = await fetch(`${ENDPOINT_URL}/api/image-delete`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(formData),
+      credentials: 'include'
+    });
+    return await res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}

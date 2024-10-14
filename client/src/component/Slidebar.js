@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { TbMessageFilled } from "react-icons/tb";
 import { FaUserPlus } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import { logout } from '../redux/userSlice';
 import { logoutUser } from '../Actions/UserActions';
 import toast from 'react-hot-toast';
 import SearchUser from './SearchUser';
+import { SocketContext } from '../redux/SocketContext';
 
 const Slidebar = () => {
   const user = useSelector(state => state?.user)
@@ -18,6 +19,46 @@ const Slidebar = () => {
   const [editUserOpen, setEditUserOpen] = useState(false)
   const [allUser, setAllUser] = useState([])
   const [openSearchUser, setOpenSearchUser] = useState(false)
+  const socketConnection = useContext(SocketContext);
+
+  useEffect(() => {
+    if (socketConnection && user && user._id) {
+      // Emit the 'slidebar' event with user._id
+      socketConnection.emit('slidebar', user._id);
+
+      // Define a callback for the 'conversation' event
+      const handleConversation = (data) => {
+        const conversationUserData = data.map((conUser) => {
+          if (conUser.sender._id === conUser.receiver?._id) {
+            return {
+              ...conUser,
+              userDetails: conUser.sender,
+            };
+          } else if (conUser.sender._id !== user._id) {
+            return {
+              ...conUser,
+              userDetails: conUser.sender,
+            };
+          } else {
+            return {
+              ...conUser,
+              userDetails: conUser.receiver,
+            };
+          }
+        });
+
+        setAllUser(conversationUserData);
+      };
+
+      // Attach the event listener
+      socketConnection.on('conversation', handleConversation);
+
+      // Cleanup function to remove the event listener
+      return () => {
+        socketConnection.off('conversation', handleConversation);
+      };
+    }
+  }, [socketConnection, user]);
 
   const handleLogout = async () => {
     const res = await logoutUser();
@@ -69,6 +110,23 @@ const Slidebar = () => {
                 <p className='text-lg text-center text-slate-800'>Explore users to start a conversation with.</p>
               </div>
             )
+          }
+          {
+            allUser.map((conv,index)=>{
+              return(
+                <div key={conv?._id} className='flex items-center gap-2'>
+                  <div>
+                    <Avatar imageUrl={conv.userDetails.profile_pic} name={conv.userDetails.name} width={50} height={50}/>
+                  </div>
+                  <div>
+                    <h3 className='text-ellipsis line-clamp-1'>{conv?.userDetails?.name}</h3>
+                    <div>
+                      <p>{conv?.lastMsg?.text}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            })
           }
         </div>
       </div>

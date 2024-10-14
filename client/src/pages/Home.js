@@ -1,20 +1,18 @@
-import React,{useEffect} from 'react'
+import React,{useContext, useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { userDetails } from '../Actions/UserActions';
-import { logout, setOnlineUser, setSocketConnection, setUser } from '../redux/userSlice';
+import { logout, setOnlineUser, setUser } from '../redux/userSlice';
 import Slidebar from '../component/Slidebar';
 import logo from '../Assets/logo1.png'
-import io from 'socket.io-client'
-import { ENDPOINT_URL } from '../constants/constant';
-
+import { SocketContext } from '../redux/SocketContext';
 const Home = () => {
   const user=useSelector(state=>state.user)
   const dispatch=useDispatch()
   const navigate=useNavigate()
   const location=useLocation()
   const basepath=location.pathname === '/home'
-
+  const socketConnection = useContext(SocketContext);
   const fetchUserDetails= async()=>{
     try {
       const res=await userDetails()
@@ -33,19 +31,13 @@ const Home = () => {
   })
 
   useEffect(() => {
-    const socketConnection=io(ENDPOINT_URL,{
-      auth:{
-        token: localStorage.getItem('token')
-      }
-    })
-    socketConnection.on('onlineUser',(data)=>{
-      dispatch(setOnlineUser(data))
-    })
-    dispatch(setSocketConnection(socketConnection))
-    return ()=>{
-      socketConnection.disconnect()
+    if (socketConnection) {
+      socketConnection.on('onlineUser', (data) => {
+        dispatch(setOnlineUser(data));
+      });
     }
-  },[dispatch])
+
+  },[socketConnection,dispatch])
 
 
   return (
