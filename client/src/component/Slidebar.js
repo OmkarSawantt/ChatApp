@@ -11,7 +11,7 @@ import { logoutUser } from '../Actions/UserActions';
 import toast from 'react-hot-toast';
 import SearchUser from './SearchUser';
 import { SocketContext } from '../redux/SocketContext';
-
+import { IoMdImage,IoMdVideocam  } from "react-icons/io";
 const Slidebar = () => {
   const user = useSelector(state => state?.user)
   const dispatch = useDispatch()
@@ -114,17 +114,38 @@ const Slidebar = () => {
           {
             allUser.map((conv,index)=>{
               return(
-                <div key={conv?._id} className='flex items-center gap-2'>
+                <NavLink to={'/home/'+conv?.userDetails?._id} key={conv?._id} className='flex items-center gap-2 px-2 py-3 border-b border border-b-slate-400 hover:border-primary hover:border hover:bg-slate-200 rounded cursor-pointer'>
                   <div>
                     <Avatar imageUrl={conv.userDetails.profile_pic} name={conv.userDetails.name} width={50} height={50}/>
                   </div>
                   <div>
-                    <h3 className='text-ellipsis line-clamp-1'>{conv?.userDetails?.name}</h3>
-                    <div>
-                      <p>{conv?.lastMsg?.text}</p>
+                    <h3 className='text-ellipsis line-clamp-1 font-semibold'>{conv?.userDetails?.name}</h3>
+                    <div className='text-slate-500 text-sm flex items-center gap-1 '>
+                      <div>
+                        {
+                          conv?.lastMsg?.imageUrl && (
+                            <div className='flex items-center gap-1'>
+                              <span><IoMdImage/></span>
+                              {!conv?.lastMsg?.text && <span>Image</span>}
+                            </div>
+                          )
+                        }
+                        {
+                          conv?.lastMsg?.videoUrl && (
+                            <div className='flex items-center gap-1'>
+                              <span><IoMdVideocam/></span>
+                              {!conv?.lastMsg?.text && <span>Video</span>}
+                            </div>
+                          )
+                        }
+                      </div>
+                      <p className='text-ellipsis line-clamp-1'>{conv?.lastMsg?.text}</p>
                     </div>
                   </div>
-                </div>
+                  {
+                    Boolean(conv?.unseenMsg) && (<p className='text-sm w-7 h-7 flex justify-center items-center ml-auto p-1 bg-secondary text-white font-semibold rounded-full'>{conv?.unseenMsg}</p>)
+                  }
+                </NavLink>
               )
             })
           }

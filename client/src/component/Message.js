@@ -13,6 +13,7 @@ import wallapaper from '../Assets/wallapaper.jpeg'
 import { IoSendSharp } from "react-icons/io5";
 import { SocketContext } from '../redux/SocketContext';
 import moment from 'moment'
+import UserDetail from './UserDetail';
 const Message = () => {
   const param=useParams()
   const socketConnection = useContext(SocketContext);
@@ -22,10 +23,12 @@ const Message = () => {
     email:'',
     profile_pic:'',
     online:false,
-    _id:''
+    _id:'',
+    createdAt:''
   })
   const [openUpload,setOpenUpload]=useState(false)
   const[loading,setLoading]=useState(false)
+  const[userDetailPage,setUserDetailPage]=useState(false)
   const [message,setMessage]=useState({
     text:'',
     imageUrl:'',
@@ -112,6 +115,7 @@ const Message = () => {
     if(socketConnection){
       socketConnection.emit('message-page',param.userId)
 
+      socketConnection.emit('seen',param.userId)
       socketConnection.on('message-user',(data)=>{
         setUserData(data)
       })
@@ -167,7 +171,7 @@ const Message = () => {
           </div>
         </div>
         <div>
-          <button className='hover:text-primary text-3xl'>
+          <button onClick={() => setUserDetailPage(prevState => !prevState)} className='hover:text-primary text-3xl'>
             <RiMenu3Fill />
           </button>
         </div>
@@ -259,6 +263,11 @@ const Message = () => {
           </button>
         </form>
       </section>
+        {
+          userDetailPage && (
+            <UserDetail userId={userData._id} userName={userData.name} userEmail={userData.email} userPic={userData.profile_pic} createdAt={userData.createdAt} />
+          )
+        }
     </div>
   )
 }

@@ -5,6 +5,7 @@ const getUserDetailsFromToken = require('../helpers/getUserDetailsFromToken')
 const UserModel = require('../models/UserModel')
 const { ConversationModel, MessageModel } = require('../models/ConversationModel')
 const app=express()
+const getConversation =require('../helpers/getConversation')
 /* Socket Connection */
 
 const server=http.createServer(app)
@@ -36,7 +37,8 @@ io.on('connection',async(socket)=>{
       name:userDetails?.name,
       email:userDetails?.email,
       profile_pic:userDetails?.profile_pic,
-      online:onlineUser.has(userId)
+      online:onlineUser.has(userId),
+      createdAt:userDetails?.createdAt
     }
     socket.emit('message-user',payload)
 
@@ -96,36 +98,43 @@ io.on('connection',async(socket)=>{
 
     io.to(data.sender).emit('message', getConversationMessages?.messages || []);
     io.to(data.receiver).emit('message', getConversationMessages?.messages || []);
+
+    const conversationSender=await getConversation(data.sender)
+    const conversationReceiver=await getConversation(data.receiver)
+
+    io.to(data.sender).emit('conversation', conversationSender);
+    io.to(data.receiver).emit('conversation', conversationReceiver);
   });
 
 
   socket.on('slidebar',async(currentUserId)=>{
     try {
       console.log('curent UserID',currentUserId);
-      const currentUserConversation=await ConversationModel.find({
-        "$or" :[
-          {sender:currentUserId},
-          {receiver:currentUserId}
-        ]
-      }).sort({updatedAt:-1}).populate('messages').populate('sender').populate('receiver')
-
-
-      const conversation=currentUserConversation.map((conv)=>{
-        const countUnseenMsg=conv.messages.reduce((preve, curr) =>preve+(curr?.seen ? 0 :1),0)
-        return{
-          _id:conv?._id,
-          sender:conv?.sender,
-          receiver:conv?.receiver,
-          unseenMsg:countUnseenMsg,
-          lastMsg:conv.messages[conv?.messages?.length-1]
-        }
-      })
-      console.log('conversation',conversation);
-
+      const conversation=await getConversation(currentUserId)
       socket.emit('conversation',conversation)
     } catch (error) {
       console.log(error);
     }
+  })
+
+  socket.on('seen',async(msgByUserId)=>{
+    let conversation = await ConversationModel.findOne({
+      "$or": [
+        { sender: user, receiver: msgByUserId },
+        { sender: msgByUserId, receiver: user }
+      ]
+    });
+    const conversationMessageID=conversation?.messages || []
+
+    const updateMsg=await MessageModel.updateMany(
+      { _id : {"$in" : conversationMessageID} , msgByUserID : msgByUserId},
+      { "$set" : { seen : true}}
+    )
+    const conversationSender=await getConversation(user)
+    const conversationReceiver=await getConversation(msgByUserId)
+
+    io.to(user).emit('conversation', conversationSender);
+    io.to(msgByUserId).emit('conversation', conversationReceiver);
   })
 
   socket.on('disconnect',()=>{

@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { userDetails } from '../Actions/UserActions';
 import { logout, setOnlineUser, setUser } from '../redux/userSlice';
 import Slidebar from '../component/Slidebar';
-import logo from '../Assets/logo1.png'
+import logo from '../Assets/logo1.svg'
 import { SocketContext } from '../redux/SocketContext';
 const Home = () => {
   const user=useSelector(state=>state.user)
@@ -50,7 +50,7 @@ const Home = () => {
         <Outlet/>
       </section>
       {basepath && (
-        <div className='lg:flex justify-center items-center flex-col gap-2'>
+        <div className='hidden lg:flex justify-center items-center flex-col gap-2'>
           <div>
             <img src={logo} width={250} alt="logo" />
           </div>
