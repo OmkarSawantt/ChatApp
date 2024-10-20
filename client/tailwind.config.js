@@ -8,7 +8,10 @@ module.exports = {
       colors:{
         primary:'rgba(23, 92, 211,0.5)',
         secondary:'rgba(23, 92, 211,1)'
-      }
+      },
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+      },
     },
   },
   plugins: [],
