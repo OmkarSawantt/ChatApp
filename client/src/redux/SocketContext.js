@@ -1,7 +1,7 @@
 // SocketContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import { ENDPOINT_URL } from '../constants/constant';
+
 import { useSelector } from 'react-redux';
 
 // Create Context
@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if(user){
 
-      const socket = io(ENDPOINT_URL, {
+      const socket = io(process.env.REACT_APP_ENDPOINT_URL, {
         auth: {
         token: localStorage.getItem('token'),
       },

@@ -1,7 +1,6 @@
-import { ENDPOINT_URL } from "../constants/constant";
 export const registerUser=async (userDetails)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/register`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/register`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -16,7 +15,7 @@ export const registerUser=async (userDetails)=>{
 }
 export const email=async (email)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/email`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/email`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -31,7 +30,7 @@ export const email=async (email)=>{
 }
 export const passwordCheak=async (userData)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/password`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/password`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -48,7 +47,7 @@ export const passwordCheak=async (userData)=>{
 
 export const userDetails=async ()=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/user`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/user`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -63,7 +62,7 @@ export const userDetails=async ()=>{
 }
 export const logoutUser = async () => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/logout`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/logout`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -80,7 +79,7 @@ export const logoutUser = async () => {
 // Update Profile Picture
 export const updateProfilePic = async (formData) => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/update-user-profile`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/update-user-profile`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -97,7 +96,7 @@ export const updateProfilePic = async (formData) => {
 // Update User Details
 export const updateUser = async (userData) => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/update-user`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/update-user`, {
       method: 'PATCH',
       headers: {
         Accept: 'application/json',
@@ -115,7 +114,7 @@ export const updateUser = async (userData) => {
 
 export const searchUserAction=async (userData)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/search-user`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/search-user`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -132,7 +131,7 @@ export const searchUserAction=async (userData)=>{
 
 export const imageUpload = async (formData) => {
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/image`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/image`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -148,7 +147,7 @@ export const imageUpload = async (formData) => {
 };
 export const imageDelete=async (formData)=>{
   try {
-    const res = await fetch(`${ENDPOINT_URL}/api/image-delete`, {
+    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/image-delete`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
