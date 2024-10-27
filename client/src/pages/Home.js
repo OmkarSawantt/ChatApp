@@ -18,7 +18,7 @@ const Home = () => {
       const res=await userDetails()
       if (res.logout) {
         dispatch(logout())
-        navigate('/email')
+        //navigate('/email')
       }else if (res.data) {
         dispatch(setUser(res.data))
       }

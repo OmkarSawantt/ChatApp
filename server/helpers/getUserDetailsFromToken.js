@@ -1,15 +1,16 @@
-const jwt=require('jsonwebtoken')
-const getUserDetailsFromToken=async(token)=>{
-    if(!token){
-        return{
-            message:"session out",
-            logout:true,
-        }
+const jwt = require('jsonwebtoken');
+
+const getUserDetailsFromToken = async (token) => {
+    if (!token) {
+        return null; // Return null or handle logout differently
     }
-    const decode=await jwt.verify(token,process.env.JWT_SECREAT_KEY)
 
+    try {
+        const decode = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+        return decode.id; // Ensure this returns an ID only
+    } catch (error) {
+        return null; // Return null if token verification fails
+    }
+};
 
-
-    return decode.id
-}
-module.exports=getUserDetailsFromToken
+module.exports = getUserDetailsFromToken;
