@@ -4,6 +4,8 @@ import logo from '../Assets/logo1.svg'
 import landingImg from '../Assets/landingImg.svg'
 import { MdOutlineAccessTime ,MdOutlineImage ,MdLockPerson ,MdDevicesOther  } from "react-icons/md";
 import { BsStars } from "react-icons/bs";
+import Spline from '@splinetool/react-spline';
+
 const Landing = () => {
 
   const [loggedIn,setLoggedIn]=useState(false)
@@ -36,17 +38,28 @@ const Landing = () => {
 
       </header>
       <div>
-        <div className="h-[calc(100vh-4.5rem)] mt-[4.5rem] shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" style={{ backgroundImage: `url(${landingImg})` }}>
-          <h1 className='px-8 pt-40 text-4xl font-extrabold font-roboto z-50 lg:text-7xl'>Connect Instantly,<br/> Chat Effortlessly</h1>
-          <p className='px-8 mt-8  text-xs font-light text-center font-roboto z-50 w-full lg:w-1/3  lg:text-lg '>A simple and secure platform for real-time communication. Chat with friends or make new connections instantly!</p>
-          <div className='flex gap-4 mt-8 lg:w-1/3 items-center justify-center'>
-            <div>
-              <Link to={'/home'} className="cursor-pointer text-sm lg:text-base transition-all bg-primary text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-secondary border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Chat Now</Link>
-            </div>
-            <div>
-              <a href='https://github.com/OmkarSawantt/ChatApp' target="_blank" rel="noopener noreferrer"  className="cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Source Code</a>
-            </div>
+        <div className="h-[calc(100vh-4.5rem)]    mt-[4.5rem] shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
+        <div className="absolute inset-0 -z-10 top-8">
+          <Spline scene="https://prod.spline.design/SsYLlYIGfEf39GtL/scene.splinecode"/>
+        </div>
+        <div className='flex flex-col w-full lg:w-1/3 pt-80 lg:pt-20 px-4 gap-4 z-0 lg:items-start items-center'>
+          <h1 className='text-4xl text-center mx-auto font-extrabold lg:backdrop-blur rounded underline font-roboto text-white lg:text-slate-400 shadow lg:text-5xl'>Connect Instantly</h1>
+          <h1 className='text-4xl mx-auto font-extrabold lg:backdrop-blur rounded underline text-center text-white lg:text-slate-400 font-roboto lg:text-5xl'>Chat Effortlessly</h1>
+        </div>
+        <div className='mx-4 mt-4 -ml-1 text-xs  text-center px-4 text-white lg:text-slate-400 lg:text-left font-roboto z-50 w-full lg:w-1/3 lg:text-lg'>
+          <p className='mx-2 text-center lg:backdrop-blur'>
+            A simple and secure platform for real-time communication. Chat with friends or make new connections instantly!
+          </p>
+        </div>
+        <div className='flex gap-4 p-4 lg:w-1/3  items-center justify-center '>
+          <div>
+            <Link to={'/home'} className="cursor-pointer text-sm lg:text-base transition-all bg-primary text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-secondary border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Chat Now</Link>
           </div>
+          <div>
+            <a href='https://github.com/OmkarSawantt/ChatApp' target="_blank" rel="noopener noreferrer" className="cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Source Code</a>
+          </div>
+        </div>
+
         </div>
         <div className='min-h-[calc(100vh-4.5rem)] bg-slate-200 border-b-2 border-slate-400'>
           <h1 className='px-8 py-5  text-2xl font-extrabold font-roboto z-50 lg:text-7xl'>Powerful Features</h1>
