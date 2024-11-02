@@ -86,11 +86,13 @@ const checkPassword=async(req,res)=>{
                 id:user._id,
             }
             const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{ expiresIn: '10y' })
-            const cookieOptions={
-                http:true,
-                secure:false,
+            const cookieOptions = {
+                httpOnly: true,
+                secure: true,
+                sameSite: "None",
                 expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000)
-            }
+            };
+
             return res.cookie('token',token,cookieOptions).status(200).json({
                 message:"You have been successfully logged in!",
                 token:token,
@@ -133,7 +135,7 @@ const logout=async(req,res)=>{
     try {
         const cookieOptions={
             http:true,
-            secure:false,
+            secure:true,
             expires: new Date(0)
         }
         return res.cookie('token','',cookieOptions).status(200).json({
@@ -263,6 +265,7 @@ const searchUser=async(req,res)=>{
         })
     }
 }
+
 const imageUpload=async(req,res)=>{
     try {
         const {image}=req.files;

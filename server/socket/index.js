@@ -10,10 +10,11 @@ const getConversation =require('../helpers/getConversation')
 
 const server=http.createServer(app)
 const io=new Server(server,{
-  cors:{
-    origin:'http://localhost:3000',
-    credentials:true
-  }
+  cors: {
+    origin: ['https://sonorous.vercel.app', 'http://localhost:3000'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 })
 const onlineUser=new Set()
 
