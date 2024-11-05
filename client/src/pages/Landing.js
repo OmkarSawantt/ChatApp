@@ -39,25 +39,28 @@ const Landing = () => {
       </header>
       <div>
         <div className="h-[calc(100vh-4.5rem)]    mt-[4.5rem] shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
-        <div className="absolute inset-0  top-8">
-          <Spline scene="https://prod.spline.design/SsYLlYIGfEf39GtL/scene.splinecode"/>
+        <div className="absolute inset-0  top-8 -z-0">
+          <Spline scene="https://prod.spline.design/qfdFARGWNYO-WGyp/scene.splinecode"/>
         </div>
-        <div className='flex flex-col w-full lg:w-1/3 pt-80 lg:pt-20 px-4 gap-4 z-0 lg:items-start items-center'>
-          <h1 className='text-4xl text-center mx-auto font-extrabold lg:backdrop-blur rounded underline font-roboto text-white lg:text-slate-400 shadow lg:text-5xl'>Connect Instantly</h1>
-          <h1 className='text-4xl mx-auto font-extrabold lg:backdrop-blur rounded underline text-center text-white lg:text-slate-400 font-roboto lg:text-5xl'>Chat Effortlessly</h1>
+        <div className='h-full flex flex-col gap-4 justify-end items-center'>
+
+        {/* <div className='flex flex-col w-full  mt-auto lg:pt-20 px-4 gap-4 lg:items-start items-center justify-center'>
+          <h1 className='text-4xl text-center mx-auto z-10 font-extrabold  rounded underline font-roboto text-slate-400 shadow lg:text-5xl'>Connect Instantly</h1>
+          <h1 className='text-4xl mx-auto font-extrabold z-10 rounded underline text-center text-slate-400 font-roboto lg:text-5xl'>Chat Effortlessly</h1>
         </div>
-        <div className='mx-4 mt-4 -ml-1 text-xs  text-center px-4 text-white lg:text-slate-400 lg:text-left font-roboto z-50 w-full lg:w-1/3 lg:text-lg'>
-          <p className='mx-2 text-center lg:backdrop-blur'>
+        <div className='mx-4 mt-4 -ml-1 text-xs  z-10  text-center px-4 text-slate-400 lg:text-left font-roboto w-full lg:w-1/2 lg:text-lg'>
+          <p className='mx-2 z-10 text-center'>
             A simple and secure platform for real-time communication. Chat with friends or make new connections instantly!
           </p>
-        </div>
-        <div className='flex gap-4 p-4 lg:w-1/3  items-center justify-center '>
+        </div> */}
+        <div className='flex gap-4 p-4 w-full z-10 items-center justify-center bg-[#06070A]'>
           <div>
             <Link to={'/home'} className="cursor-pointer text-sm lg:text-base transition-all bg-primary text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-secondary border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Chat Now</Link>
           </div>
           <div>
             <a href='https://github.com/OmkarSawantt/ChatApp' target="_blank" rel="noopener noreferrer" className="cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Source Code</a>
           </div>
+        </div>
         </div>
 
         </div>
