@@ -226,7 +226,7 @@ const Message = () => {
       </section>
 
       {userDetailPage && (
-        <UserDetail setUserDetailPage={setUserDetailPage} user={userData} />
+        <UserDetail userId={userData._id} userName={userData.name} userEmail={userData.email} userPic={userData.profile_pic} createdAt={userData.createdAt} />
       )}
     </div>
   );
