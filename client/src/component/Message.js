@@ -179,23 +179,28 @@ const Message = () => {
 
       <section className='h-[calc(100vh-136px)] overflow-x-hidden overflow-y-auto scrollbar relative bg-slate-200 bg-opacity-75'>
         <div ref={currentMessage} className='flex flex-col gap-2 py-2 mx-2'>
-        {allMessages.map((msg, index) => (
-  <div
-    className={`p-1 py-1 rounded w-fit max-w-[200px] md:max-w-sm lg:max-w-md ${user._id === msg.msgByUserID ? 'ml-auto bg-primary' : 'bg-white'}`}
-    key={index}
-  >
-    <div className='w-full'>
-      {msg?.imageUrl && (
-        <img src={msg?.imageUrl} alt="Message attachment" className='w-full h-full object-scale-down' onLoad={scrollToBottom} />
-      )}
-      {msg?.videoUrl && (
-        <video src={msg?.videoUrl} className='w-full h-full object-scale-down' controls />
-      )}
-    </div>
-    <p className="px-2">{msg.text}</p>
-    <p className='text-xs w-fit ml-auto'>{moment(msg.createdAt).format('hh:mm')}</p>
-  </div>
-))}
+          {
+            allMessages.map((msg,index)=>{
+              return(
+                <div className={` p-1 py-1 rounded w-fit max-w-[200px] md:max-w-sm lg:max-w-md ${user._id===msg.msgByUserID ? 'ml-auto bg-primary' : 'bg-white'}` } key={index}>
+                  <div className='w-full'>
+                    {
+                      msg?.imageUrl && (
+                        <img src={msg?.imageUrl} alt={msg?.imageUrl} className='w-full h-full object-scale-down '/>
+                      )
+                    }
+                    {
+                      msg?.videoUrl && (
+                        <video src={msg?.videoUrl} className='w-full h-full object-scale-down ' controls />
+                      )
+                    }
+                  </div>
+                  <p className="px-2">{msg.text}</p>
+                  <p className='text-xs w-fit ml-auto'>{moment(msg.createdAt).format('hh:mm')}</p>
+                </div>
+              )
+            })
+          }
         </div>
         {
           message.imageUrl &&(
