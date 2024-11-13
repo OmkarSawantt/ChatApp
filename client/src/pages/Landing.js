@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {Link } from 'react-router-dom'
 import logo from '../Assets/logo1.svg'
-import landingImg from '../Assets/landingImg.svg'
 import { MdOutlineAccessTime ,MdOutlineImage ,MdLockPerson ,MdDevicesOther  } from "react-icons/md";
 import { BsStars } from "react-icons/bs";
 import Spline from '@splinetool/react-spline';
@@ -12,7 +11,7 @@ const Landing = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setLoggedIn(!!token);
-  })
+  },[])
   return (
     <div>
       <header className='h-[4.5rem] bg-white shadow-2xl fixed top-0 w-full flex items-center justify-between z-50'>
