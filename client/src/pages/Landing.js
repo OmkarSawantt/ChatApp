@@ -40,7 +40,7 @@ const Landing = () => {
       <div>
         <div className="h-[calc(100vh-4.5rem)]    mt-[4.5rem] shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
         <div className="absolute inset-0  top-8 -z-0">
-          <Spline scene="https://prod.spline.design/qfdFARGWNYO-WGyp/scene.splinecode"/>
+          <Spline scene="https://prod.spline.design/6tP7-9KKlGKpx80Z/scene.splinecode"/>
         </div>
         <div className='h-full flex flex-col gap-4 justify-end items-center'>
 
@@ -53,7 +53,7 @@ const Landing = () => {
             A simple and secure platform for real-time communication. Chat with friends or make new connections instantly!
           </p>
         </div> */}
-        <div className='flex gap-4 p-4 w-full z-10 items-center justify-center bg-[#06070A]'>
+        <div className='flex gap-4 p-8 -m-2 bg-white 100% w-full z-10 items-center justify-center '>
           <div>
             <Link to={'/home'} className="cursor-pointer text-sm lg:text-base transition-all bg-primary text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-secondary border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Chat Now</Link>
           </div>
