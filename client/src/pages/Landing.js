@@ -83,7 +83,7 @@ const Landing = () => {
       <footer className='h-24  flex flex-col lg:flex-row justify-between  items-center bg-white shadow-md'>
         <div className=' border-b flex border-slate-500 lg:border-none items-center  justify-center'><img src={logo} className='w-36 lg:w-48 ml-2 lg:ml-8  ' alt="logo" /></div>
           <p className=' text-sm text-slate-400 '>@ 2024 Sonorous, Inc. All rights reserved.</p>
-          <Link to={'/home'}  className=" cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Get Started</Link>
+          <Link to={'/home'}  className=" cursor-pointer mr-4 lg:mr-8 transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Get Started</Link>
       </footer>
     </div>
   )
