@@ -20,7 +20,7 @@ const Landing = () => {
             loggedIn ?(
               <div className='flex mx-4 lg:mx-8 gap-4 h-3/4 items-center'>
                 <div>
-                <Link to={'/home'}  className=" cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Get Started</Link>
+                <Link to={'/home'}  className=" cursor-pointer transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ">Get Started</Link>
                 </div>
               </div>
             ):(
@@ -37,7 +37,7 @@ const Landing = () => {
 
       </header>
       <div>
-        <div className="h-[calc(100vh-4.5rem)]    mt-[4.5rem] shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
+        <div className="h-[calc(100vh-4.5rem)]    lg:mt-[4.5rem] mt-2 shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
         <div className="absolute inset-0  top-8 -z-0">
           <Spline scene="https://prod.spline.design/6tP7-9KKlGKpx80Z/scene.splinecode"/>
         </div>
@@ -82,7 +82,7 @@ const Landing = () => {
       <footer className='h-24  flex flex-col lg:flex-row justify-between  items-center bg-white shadow-md'>
         <div className=' border-b flex border-slate-500 lg:border-none items-center  justify-center'><img src={logo} className='w-36 lg:w-48 ml-2 lg:ml-8  ' alt="logo" /></div>
           <p className=' text-sm text-slate-400 '>@ 2024 Sonorous, Inc. All rights reserved.</p>
-          <Link to={'/home'}  className=" cursor-pointer mr-4 lg:mr-8 transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Get Started</Link>
+          <Link to={'/home'}  className=" cursor-pointer mr-0 lg:mr-8 transition-all text-sm lg:text-base bg-blue-500 text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Get Started</Link>
       </footer>
     </div>
   )

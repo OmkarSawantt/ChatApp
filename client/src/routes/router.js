@@ -7,11 +7,12 @@ import Home from "../pages/Home";
 import Message from "../component/Message";
 import Landing from "../pages/Landing";
 import AuthLayout from "../layout/layout";
-
+import ErrorPage from "../pages/ErrorPage"
 const router=createBrowserRouter([
 {
     path:"/",
     element:<App/>,
+    errorElement: <ErrorPage />,
     children:[
         {
             path:"register",
