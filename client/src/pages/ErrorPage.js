@@ -2,22 +2,16 @@ import React from 'react';
 
 const ErrorPage = () => {
   return (
-    <section className="bg-white">
+    <section className=" h-screen flex flex-col">
       <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-        <div className="mx-auto max-w-screen-sm text-center">
-          <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600">
+        <div className="mx-auto max-w-screen-md text-center gap-4">
+          <h1 className="mb-4 text-9xl lg:text-[15rem] tracking-tight font-extrabold  text-primary-600">
             404
           </h1>
-          <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl">
-            Something's missing.
+          <p className="mb-4 text-3xl tracking-tight font-bold text-slate-500 md:text-4xl">
+          The page you are looking for doesn't exist or has been moved. Please go back to the homepage.
           </p>
-          <p className="mb-4 text-lg font-light text-gray-500">
-            Sorry, we can't find that page. You'll find lots to explore on the home page.
-          </p>
-          <a
-            href="#"
-            className="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center my-4"
-          >
+          <a href="#"  className="m-8 cursor-pointer transition-all bg-blue-500 text-white px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]" >
             Back to Homepage
           </a>
         </div>

@@ -37,8 +37,8 @@ const Landing = () => {
 
       </header>
       <div>
-        <div className="h-[calc(100vh-4.5rem)]    lg:mt-[4.5rem] mt-2 shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 mb-4 lg:mb-0" >
-        <div className="absolute inset-0  top-8 -z-0">
+        <div className="h-[calc(100vh-4.5rem)]     mt-[4.5rem]  shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 lg:mb-0" >
+        <div className="absolute inset-0 h-full  -z-0">
           <Spline scene="https://prod.spline.design/6tP7-9KKlGKpx80Z/scene.splinecode"/>
         </div>
         <div className='h-full flex flex-col gap-4 justify-end items-center'>
@@ -52,7 +52,7 @@ const Landing = () => {
             A simple and secure platform for real-time communication. Chat with friends or make new connections instantly!
           </p>
         </div> */}
-        <div className='flex gap-4 p-8 -m-2 bg-white 100% w-full z-10 items-center justify-center '>
+        <div className='flex gap-4 p-8 mb-0 -mt-4 lg:mt-0 bg-white 100% w-full z-10 items-center justify-center '>
           <div>
             <Link to={'/home'} className="cursor-pointer text-sm lg:text-base transition-all bg-primary text-white px-3 lg:px-6 py-1 lg:py-2 rounded-lg border-secondary border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">Chat Now</Link>
           </div>
@@ -63,7 +63,7 @@ const Landing = () => {
         </div>
 
         </div>
-        <div className='min-h-[calc(100vh-4.5rem)] bg-slate-200 border-b-2 border-slate-400'>
+        <div className='min-h-[calc(100vh-4.5rem)] bg-slate-200 border-b-2 z-10 border-slate-400'>
           <h1 className='px-8 py-5  text-2xl font-extrabold font-roboto z-50 lg:text-7xl'>Powerful Features</h1>
           <p className='px-8 pb-2 lg:pb-5 text-sm lg:text-xl text-slate-700 '>Explore the powerful features designed to enhance your chatting experience. From seamless messaging to personalized interactions, we've got everything covered to keep you connected.</p>
           <div className='flex flex-wrap w-full h-3/4 gap-4 lg:gap-8 items-start justify-evenly'>
