@@ -25,7 +25,7 @@ io.on('connection',async(socket)=>{
   const token=socket.handshake.auth.token
 
   const user=await getUserDetailsFromToken(token)
-  socket.join(user.toString())
+  socket.join(user)
   onlineUser.add(user)
   io.emit('onlineUser',Array.from(onlineUser))
 

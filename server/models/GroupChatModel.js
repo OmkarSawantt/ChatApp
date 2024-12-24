@@ -13,15 +13,17 @@ const groupMessageSchema=new mongoose.Schema({
       type:String,
       default:""
   },
-  seen:{
-      type:Boolean,
-      default:false
-  },
   msgByUserID:{
       type:mongoose.Schema.ObjectId,
       required:true,
       ref:'User'
-  }
+  },
+  seenBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
 
 },{
   timestamps:true
@@ -53,8 +55,8 @@ const groupChatSchema=new mongoose.Schema({
 },{
   timestamps:true
 })
-const GroupMessageModel=mongoose.model('Message',groupMessageSchema)
-const GroupChatModel=mongoose.model('Conversation',groupChatSchema)
+const GroupMessageModel=mongoose.model('GroupMessage',groupMessageSchema)
+const GroupChatModel=mongoose.model('GroupConversation',groupChatSchema)
 module.exports={
   GroupMessageModel,
   GroupChatModel

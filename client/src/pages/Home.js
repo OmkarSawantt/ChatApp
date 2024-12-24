@@ -7,7 +7,6 @@ import Slidebar from '../component/Slidebar';
 import logo from '../Assets/logo1.svg'
 import { SocketContext } from '../redux/SocketContext';
 const Home = () => {
-  const user=useSelector(state=>state.user)
   const dispatch=useDispatch()
   const navigate=useNavigate()
   const location=useLocation()
@@ -16,9 +15,11 @@ const Home = () => {
   const fetchUserDetails= async()=>{
     try {
       const res=await userDetails()
+
+      console.log(res.data);
       if (res.logout) {
         dispatch(logout())
-        //navigate('/email')
+        navigate('/email')
       }else if (res.data) {
         dispatch(setUser(res.data))
       }

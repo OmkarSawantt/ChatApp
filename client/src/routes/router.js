@@ -8,6 +8,8 @@ import Message from "../component/Message";
 import Landing from "../pages/Landing";
 import AuthLayout from "../layout/layout";
 import ErrorPage from "../pages/ErrorPage"
+import GroupChat from "../component/GroupChat";
+import Group from "../pages/Group";
 const router=createBrowserRouter([
 {
     path:"/",
@@ -37,6 +39,16 @@ const router=createBrowserRouter([
                 {
                     path:':userId',
                     element:<Message/>
+                }
+            ]
+        },
+        {
+            path:'group',
+            element:<Group/>,
+            children:[
+                {
+                    path:':groupId',
+                    element:<GroupChat/>
                 }
             ]
         }

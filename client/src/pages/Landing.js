@@ -39,7 +39,7 @@ const Landing = () => {
       <div>
         <div className="h-[calc(100vh-4.5rem)]     mt-[4.5rem]  shadow-2xl bg-no-repeat bg-center bg-cover border-b-2 border-slate-400 lg:mb-0" >
         <div className="absolute inset-0 h-full  -z-0">
-          <Spline scene="https://prod.spline.design/6tP7-9KKlGKpx80Z/scene.splinecode"/>
+          <Spline scene="https://prod.spline.design/CYEO02KHBGYxLtAa/scene.splinecode"/>
         </div>
         <div className='h-full flex flex-col gap-4 justify-end items-center'>
 

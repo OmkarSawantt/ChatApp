@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { TbMessageFilled } from "react-icons/tb";
+import { MdGroups ,MdGroupAdd  } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate , useLocation , useParams } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import Avatar from './Avatar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import toast from 'react-hot-toast';
 import SearchUser from './SearchUser';
 import { SocketContext } from '../redux/SocketContext';
 import { IoMdImage,IoMdVideocam  } from "react-icons/io";
+import AddGroup from './AddGroup';
 const Slidebar = () => {
   const user = useSelector(state => state?.user)
   const dispatch = useDispatch()
@@ -19,9 +21,15 @@ const Slidebar = () => {
   const [editUserOpen, setEditUserOpen] = useState(false)
   const [allUser, setAllUser] = useState([])
   const [openSearchUser, setOpenSearchUser] = useState(false)
+  const [addGroupbox, setaddGroupbox] = useState(false)
   const socketConnection = useContext(SocketContext);
-
+  const { userId, groupId } = useParams();
+  const location = useLocation();
+  const isHomePage = location.pathname.startsWith("/home");
+  const isGroupPage = location.pathname.startsWith("/group");
   useEffect(() => {
+    console.log("userid:",userId,"groupid:", groupId);
+
     if (socketConnection && user && user._id) {
       // Emit the 'slidebar' event with user._id
       socketConnection.emit('slidebar', user._id);
@@ -51,7 +59,11 @@ const Slidebar = () => {
       };
 
       // Attach the event listener
-      socketConnection.on('conversation', handleConversation);
+      if(isHomePage){
+        socketConnection.on('conversation', handleConversation);
+      }else{
+        setAllUser([]);
+      }
 
       // Cleanup function to remove the event listener
       return () => {
@@ -79,8 +91,11 @@ const Slidebar = () => {
     <div className='w-full h-full grid grid-cols-[48px,1fr]'>
       <div className='bg-slate-700 w-12 h-full rounded-tr-md rounded-br-md py-5 flex flex-col justify-between'>
         <div>
-          <NavLink className={({ isActive }) => `w-12 h-12 flex justify-center items-center hover:bg-slate-800 rounded-sm text-slate-50 ${isActive && "bg-slate-800"}`} title='chat'>
+          <NavLink to='/home' className={({ isActive }) => `w-12 h-12 flex justify-center items-center hover:bg-slate-800 rounded-sm text-slate-50 ${isActive && "bg-slate-800"}`} title='chat' >
             <TbMessageFilled size={25} />
+          </NavLink>
+          <NavLink to='/group' className={({ isActive }) => `w-12 h-12 flex justify-center items-center hover:bg-slate-800 rounded-sm text-slate-50 ${isActive && "bg-slate-800"}`} title='chat' >
+            <MdGroups size={25} />
           </NavLink>
           <div title='add friend' onClick={() => setOpenSearchUser(true)} className='w-12 h-12 flex justify-center items-center hover:bg-slate-800 rounded-sm text-slate-50'>
             <FaUserPlus size={25} className='-mr-2' />
@@ -97,9 +112,17 @@ const Slidebar = () => {
       </div>
 
       <div className='w-full shadow-sm'>
-        <div className='h-[4.25rem] flex items-center shadow-lg border border-slate-100 bg-white justify-center z-0'>
-          <h2 className='text-xl font-bold text-slate-800'>Messages</h2>
-        </div>
+        <div className='h-[4.25rem] flex items-center shadow-lg border border-slate-100 bg-white justify-left z-0'>
+          {
+            isGroupPage ? <h2 className='text-xl ml-2 font-bold text-slate-800'>Groups</h2> :  <h2 className='text-xl ml-2 font-bold text-slate-800'>Messages</h2>
+          }
+          {
+            isGroupPage && (
+              <button className='ml-auto' title={'CreateGroup'} onClick={() => setaddGroupbox(true)}>
+                <MdGroupAdd className='text-2xl font-bold text-slate-800 mr-2'/>
+              </button>)
+          }
+          </div>
         <div className='h-[calc(100vh-68px)] overflow-x-hidden overflow-y-auto scrollbar bg-slate-'>
           {
             allUser.length === 0 && (
@@ -159,6 +182,11 @@ const Slidebar = () => {
       {
         openSearchUser && (
           <SearchUser onclose={handleCloseSearchUser} />
+        )
+      }
+      {
+        addGroupbox && (
+          <AddGroup onclose={() => setaddGroupbox(false)}/>
         )
       }
     </div>

@@ -6,9 +6,12 @@ const getUserDetailsFromToken = async (token) => {
     }
 
     try {
-        const decode = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+        const decode = await jwt.verify(token, process.env.JWT_SECREAT_KEY);
         return decode.id; // Ensure this returns an ID only
     } catch (error) {
+        console.log(error);
+
         return null; // Return null if token verification fails
     }
 };
