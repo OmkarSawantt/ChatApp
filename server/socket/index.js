@@ -1,11 +1,15 @@
 const express=require('express')
 const {Server}=require('socket.io')
+const mongoose=require('mongoose')
 const http =require('http')
 const getUserDetailsFromToken = require('../helpers/getUserDetailsFromToken')
 const UserModel = require('../models/UserModel')
 const { ConversationModel, MessageModel } = require('../models/ConversationModel')
 const app=express()
 const getConversation =require('../helpers/getConversation')
+const getGroups = require('../helpers/getGroups')
+const { GroupChatModel, GroupMessageModel } = require('../models/GroupChatModel')
+const { log } = require('console')
 /* Socket Connection */
 
 const server=http.createServer(app)
@@ -32,7 +36,6 @@ io.on('connection',async(socket)=>{
   socket.on('message-page',async(userId)=>{
     console.log('userId',userId);
     const userDetails=await UserModel.findById(userId).select('-password')
-
     const payload={
       _id:userDetails?._id,
       name:userDetails?.name,
@@ -42,19 +45,59 @@ io.on('connection',async(socket)=>{
       createdAt:userDetails?.createdAt
     }
     socket.emit('message-user',payload)
-
     const getConversationMessages=await ConversationModel.findOne({
       "$or":[
         {sender:user, receiver:userDetails?._id?.toString()},
         {sender:userDetails?._id?.toString() , receiver:user}
       ]
     }).populate('messages').sort({updatedAt:-1})
-
-
-    socket.emit('message', getConversationMessages?.messages || []);
-
+    socket.emit('message',userId, getConversationMessages?.messages || []);
   })
-
+  socket.on('group-page',async(groupID)=>{
+    const getGroupMessages=await GroupChatModel.findById(groupID).populate({
+      path: 'messages',
+      populate: {
+        path: 'msgByUserID',
+        select: 'name email',
+      },
+    }).sort({updatedAt:-1});
+    socket.emit('group-message',groupID, getGroupMessages?.messages || []);
+  })
+  socket.on('new-group-message', async (groupId, messageData) => {
+    try {
+      const newMessage = await GroupMessageModel.create(messageData);
+      const updatedMessage = await GroupMessageModel.findByIdAndUpdate(
+        newMessage._id,
+        { $addToSet: { seenBy: messageData.msgByUserID } },
+        { new: true }
+      );
+      const updatedGroup = await GroupChatModel.findByIdAndUpdate(
+        groupId,
+        { $push: { messages: updatedMessage._id } },
+        { new: true }
+      );
+      if (!updatedGroup) {
+        return socket.emit('error', 'Group Not Found');
+      }
+      const getGroupMessages = await GroupChatModel.findById(groupId).populate({
+        path: 'messages',
+        populate: {
+          path: 'msgByUserID',
+          select: 'name email',
+        },
+      }).sort({ updatedAt: -1 });
+      socket.emit('group-message',groupId, getGroupMessages?.messages || []);
+      const memberPromises = updatedGroup.members.map(async (memberId) => {
+        const groups = await getGroups(memberId);
+        io.to(memberId.toString()).emit('groups', groups);
+        io.to(memberId.toString()).emit('group-message',groupId, getGroupMessages?.messages || []);
+      });
+      await Promise.all(memberPromises);
+    } catch (error) {
+      console.error('Error in new-group-message:', error);
+      socket.emit('error', 'Something went wrong');
+    }
+  });
 
   socket.on('new message', async (data) => {
     if (!data?.sender || !data?.receiver) {
@@ -97,8 +140,8 @@ io.on('connection',async(socket)=>{
       ]
     }).populate('messages').sort({ updatedAt: -1 });
 
-    io.to(data.sender).emit('message', getConversationMessages?.messages || []);
-    io.to(data.receiver).emit('message', getConversationMessages?.messages || []);
+    io.to(data.sender).emit('message',data.receiver, getConversationMessages?.messages || []);
+    io.to(data.receiver).emit('message',data.sender, getConversationMessages?.messages || []);
 
     const conversationSender=await getConversation(data.sender)
     const conversationReceiver=await getConversation(data.receiver)
@@ -112,7 +155,9 @@ io.on('connection',async(socket)=>{
     try {
       console.log('curent UserID',currentUserId);
       const conversation=await getConversation(currentUserId)
+      const groups=await getGroups(currentUserId)
       socket.emit('conversation',conversation)
+      socket.emit('groups',groups)
     } catch (error) {
       console.log(error);
     }
@@ -137,7 +182,36 @@ io.on('connection',async(socket)=>{
     io.to(user).emit('conversation', conversationSender);
     io.to(msgByUserId).emit('conversation', conversationReceiver);
   })
-
+  socket.on('group-seen', async (userId, groupId) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(groupId)) {
+            return;
+        }
+        const group = await GroupChatModel.findById(groupId).populate('messages').exec();
+        if (!group) {
+            return;
+        }
+        const unseenMessages = group.messages.filter(
+            (message) => !message.seenBy.some((id) => id.toString() === userId)
+        );
+        if (unseenMessages.length === 0) {
+            return;
+        }
+        const updatePromises = unseenMessages.map((message) =>
+            GroupMessageModel.findByIdAndUpdate(
+                message._id,
+                { $addToSet: { seenBy: userId } },
+                { new: true }
+            )
+        );
+        await Promise.all(updatePromises);
+        console.log("userId",userId, "groupId",groupId);
+        const groups=await getGroups(userId)
+        socket.emit('groups',groups)
+    } catch (error) {
+        console.error('Error processing group-seen event:', error.message);
+    }
+});
   socket.on('disconnect',()=>{
     onlineUser.delete(user?.id)
     console.log('disconnect user', socket.id);

@@ -15,8 +15,6 @@ const Home = () => {
   const fetchUserDetails= async()=>{
     try {
       const res=await userDetails()
-
-      console.log(res.data);
       if (res.logout) {
         dispatch(logout())
         navigate('/email')
@@ -37,7 +35,16 @@ const Home = () => {
         dispatch(setOnlineUser(data));
       });
     }
+    if (basepath && socketConnection) {
+      socketConnection.on('messages', (userId,data) => {
+        console.log(data);
 
+      });
+
+      return () => {
+        socketConnection.off('onlineUser');
+      };
+    }
   },[socketConnection,dispatch])
 
 

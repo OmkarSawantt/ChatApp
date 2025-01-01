@@ -1,91 +1,91 @@
 const User = require("../models/UserModel");
 const { storage } = require('../firebase');
-const { ref, uploadBytes, getDownloadURL,deleteObject } = require('firebase/storage');
-const {v4:uuid}=require("uuid")
-const bcryptjs=require('bcryptjs')
-const jwt=require('jsonwebtoken');
+const { ref, uploadBytes, getDownloadURL, deleteObject } = require('firebase/storage');
+const { v4: uuid } = require("uuid")
+const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken');
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
 
 //register
-const registerUser=async(req,res)=>{
+const registerUser = async (req, res) => {
     try {
-        const {name ,email,password}=req.body;
-        const cheackEmail=await User.findOne({email})
-        if(cheackEmail){
+        const { name, email, password } = req.body;
+        const cheackEmail = await User.findOne({ email })
+        if (cheackEmail) {
             return res.status(400).json({
-                message:"User Already Exsist",
-                error:true
+                message: "User Already Exsist",
+                error: true
             })
         }
-        const salt=await bcryptjs.genSalt(10)
-        const hashedPassword=await bcryptjs.hash(password,salt)
+        const salt = await bcryptjs.genSalt(10)
+        const hashedPassword = await bcryptjs.hash(password, salt)
 
-        const payLoad={
+        const payLoad = {
             name,
             email,
-            password:hashedPassword
+            password: hashedPassword
         }
-        const user=new User(payLoad)
-        const userSave=await user.save()
-        if(userSave){
+        const user = new User(payLoad)
+        const userSave = await user.save()
+        if (userSave) {
             return res.status(201).json({
-                message:"User Created Successfully",
-                data:userSave,
-                success:true
+                message: "User Created Successfully",
+                data: userSave,
+                success: true
             })
-        }else{
+        } else {
             return res.status(400).json({
-                message:"Something went Wrong",
-                error:true
+                message: "Something went Wrong",
+                error: true
             })
         }
 
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //checkEmail
-const cheackEmail= async(req,res)=>{
+const cheackEmail = async (req, res) => {
     try {
-        const {email}=req.body;
-        const cheackEmail=await User.findOne({email}).select("-password")
-        if(!cheackEmail){
+        const { email } = req.body;
+        const cheackEmail = await User.findOne({ email }).select("-password")
+        if (!cheackEmail) {
             return res.status(400).json({
-                message:"User not Exsist",
-                error:true
+                message: "User not Exsist",
+                error: true
             })
         }
         return res.status(200).json({
-            message:"email verified",
-            success:true,
-            data:cheackEmail
+            message: "email verified",
+            success: true,
+            data: cheackEmail
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //cheack Password
-const checkPassword=async(req,res)=>{
+const checkPassword = async (req, res) => {
     try {
-        const {userID,password}=req.body;
-        const user=await User.findById(userID)
-        const verifyPass=await bcryptjs.compare(password,user.password)
-        if(!verifyPass){
+        const { userID, password } = req.body;
+        const user = await User.findById(userID)
+        const verifyPass = await bcryptjs.compare(password, user.password)
+        if (!verifyPass) {
             return res.status(400).json({
-                message:"Please Check Password",
-                error:true
+                message: "Please Check Password",
+                error: true
             })
-        }else{
-            const tokendata={
-                id:user._id,
+        } else {
+            const tokendata = {
+                id: user._id,
             }
-            const token=jwt.sign(tokendata,process.env.JWT_SECREAT_KEY,{ expiresIn: '10y' })
+            const token = jwt.sign(tokendata, process.env.JWT_SECREAT_KEY, { expiresIn: '10y' })
             const cookieOptions = {
                 httpOnly: true,
                 secure: true,
@@ -93,81 +93,81 @@ const checkPassword=async(req,res)=>{
                 expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000)
             };
 
-            return res.cookie('token',token,cookieOptions).status(200).json({
-                message:"You have been successfully logged in!",
-                token:token,
-                success:true
+            return res.cookie('token', token, cookieOptions).status(200).json({
+                message: "You have been successfully logged in!",
+                token: token,
+                success: true
             })
         }
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //UserDetail
-const userDetails=async(req,res)=>{
+const userDetails = async (req, res) => {
     try {
 
-        const token=req.cookies.token || ""
-        if(!token){
+        const token = req.cookies.token || ""
+        if (!token) {
             return res.json({
-                message:"User not Loged in",
-                logout:true,
+                message: "User not Loged in",
+                logout: true,
             })
         }
-        const userID=await getUserDetailsFromToken(token)
-        const user=await User.findById(userID).select('-password')
+        const userID = await getUserDetailsFromToken(token)
+        const user = await User.findById(userID).select('-password')
         return res.status(200).json({
-            message:"User Details",
-            data:user
+            message: "User Details",
+            data: user
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //Logout
-const logout=async(req,res)=>{
+const logout = async (req, res) => {
     try {
-        const cookieOptions={
-            http:true,
-            secure:true,
+        const cookieOptions = {
+            http: true,
+            secure: true,
             expires: new Date(0)
         }
-        return res.cookie('token','',cookieOptions).status(200).json({
-            message:"You have successfully logged out!",
-            success:true
+        return res.cookie('token', '', cookieOptions).status(200).json({
+            message: "You have successfully logged out!",
+            success: true
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //update profile_pic
-const updateProfilePic=async(req,res)=>{
+const updateProfilePic = async (req, res) => {
     try {
-        const {profile_pic}=req.files;
-        const token=req.cookies.token || ""
-        const userID=await getUserDetailsFromToken(token)
-        if(!profile_pic){
+        const { profile_pic } = req.files;
+        const token = req.cookies.token || ""
+        const userID = await getUserDetailsFromToken(token)
+        if (!profile_pic) {
             return res.status(500).json({
-                message:"Image not found",
-                error:true
+                message: "Image not found",
+                error: true
             })
         }
         let updateUser;
         let downloadURL;
-        if(userID){
-            const userInfo=await User.findById(userID)
-            const oldProfilePic=userInfo.profile_pic
+        if (userID) {
+            const userInfo = await User.findById(userID)
+            const oldProfilePic = userInfo.profile_pic
             //Delete Previous Profile pic
-            if(oldProfilePic!==process.env.DEFAUL_AVTAR_URI){
+            if (oldProfilePic !== process.env.DEFAUL_AVTAR_URI) {
                 const pathStart = oldProfilePic.indexOf("/o/") + 3;
                 const pathEnd = oldProfilePic.indexOf("?alt=");
                 const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
@@ -176,54 +176,54 @@ const updateProfilePic=async(req,res)=>{
             }
 
             //Insert new Profile pic
-            const filename=profile_pic.name;
-            const spittedFilename=filename.split('.')
-            const newName=spittedFilename[0]+uuid()+"."+spittedFilename[spittedFilename.length-1]
+            const filename = profile_pic.name;
+            const spittedFilename = filename.split('.')
+            const newName = spittedFilename[0] + uuid() + "." + spittedFilename[spittedFilename.length - 1]
             const imageRef = ref(storage, `ChatApp/${newName}`);
             const metadata = {
                 contentType: profile_pic.mimetype,
             };
             const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
             downloadURL = await getDownloadURL(snapshot.ref);
-            updateUser=await User.updateOne({_id:userID},{profile_pic:downloadURL})
+            updateUser = await User.updateOne({ _id: userID }, { profile_pic: downloadURL })
 
         }
         return res.json({
-            message:"Profile Pic is Updated",
-            data:{profile_pic:downloadURL},
-            success:true
+            message: "Profile Pic is Updated",
+            data: { profile_pic: downloadURL },
+            success: true
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 //Update User details
-const updateUser=async(req,res)=>{
+const updateUser = async (req, res) => {
     try {
-        const token=req.cookies.token || ""
-        const user=await getUserDetailsFromToken(token)
-        const {name,email,password}=req.body;
-        const updates={};
-        if(name){
-            updates.name=name;
+        const token = req.cookies.token || ""
+        const user = await getUserDetailsFromToken(token)
+        const { name, email, password } = req.body;
+        const updates = {};
+        if (name) {
+            updates.name = name;
         }
-        if(email){
-            updates.email=email;
+        if (email) {
+            updates.email = email;
         }
-        if(password){
-            const salt=await bcryptjs.genSalt(10)
-            const hashedPassword=await bcryptjs.hash(password,salt)
-            updates.password=hashedPassword;
+        if (password) {
+            const salt = await bcryptjs.genSalt(10)
+            const hashedPassword = await bcryptjs.hash(password, salt)
+            updates.password = hashedPassword;
         }
 
         const updatedUser = await User.findByIdAndUpdate(user, updates, { new: true });
         if (!updatedUser) {
             return res.status(404).json({
-              message: "User not found",
-              error: true
+                message: "User not found",
+                error: true
             });
         }
 
@@ -237,43 +237,43 @@ const updateUser=async(req,res)=>{
 
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
-const searchUser=async(req,res)=>{
+const searchUser = async (req, res) => {
     try {
-        const {search}=req.body;
-        const query=new RegExp(search,'i','g')
-        const user=await User.find({
-            '$or':[
-                {name:query},
-                {email:query}
+        const { search } = req.body;
+        const query = new RegExp(search, 'i', 'g')
+        const user = await User.find({
+            '$or': [
+                { name: query },
+                { email: query }
             ]
         }).select("-password")
 
         return res.json({
-            message:'all user',
-            data:user,
-            success:true
+            message: 'all user',
+            data: user,
+            success: true
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
 
-const imageUpload=async(req,res)=>{
+const imageUpload = async (req, res) => {
     try {
-        const {image}=req.files;
+        const { image } = req.files;
         let downloadURL;
 
-        const filename=image.name;
-        const spittedFilename=filename.split('.')
-        const newName=spittedFilename[0]+uuid()+"."+spittedFilename[spittedFilename.length-1]
+        const filename = image.name;
+        const spittedFilename = filename.split('.')
+        const newName = spittedFilename[0] + uuid() + "." + spittedFilename[spittedFilename.length - 1]
         const imageRef = ref(storage, `ChatApp/messages/${newName}`);
         const metadata = {
             contentType: image.mimetype,
@@ -281,34 +281,34 @@ const imageUpload=async(req,res)=>{
         const snapshot = await uploadBytes(imageRef, image.data, metadata);
         downloadURL = await getDownloadURL(snapshot.ref);
         return res.json({
-            message:"Image Uploaded",
-            data:{URL:downloadURL},
-            success:true
+            message: "Image Uploaded",
+            data: { URL: downloadURL },
+            success: true
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
-const imageDelete=async(req,res)=>{
+const imageDelete = async (req, res) => {
     try {
-        const {imageUrl}=req.body;
+        const { imageUrl } = req.body;
         const pathStart = imageUrl.indexOf("/o/") + 3;
         const pathEnd = imageUrl.indexOf("?alt=");
         const filePath = decodeURIComponent(imageUrl.substring(pathStart, pathEnd));
         const fileRef = ref(storage, filePath);
         await deleteObject(fileRef);
         return res.json({
-            message:"Image Deleted",
-            success:true
+            message: "Image Deleted",
+            success: true
         })
     } catch (error) {
         return res.status(500).json({
-            message:error.message || error,
-            error:true
+            message: error.message || error,
+            error: true
         })
     }
 }
-module.exports={registerUser,cheackEmail,checkPassword,userDetails,logout,updateProfilePic,updateUser,searchUser,imageUpload,imageDelete}
+module.exports = { registerUser, cheackEmail, checkPassword, userDetails, logout, updateProfilePic, updateUser, searchUser, imageUpload, imageDelete }

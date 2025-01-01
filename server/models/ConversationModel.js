@@ -21,7 +21,7 @@ const messageSchema=new mongoose.Schema({
         type:mongoose.Schema.ObjectId,
         required:true,
         ref:'User'
-    }
+    },
 },{
     timestamps:true
 })

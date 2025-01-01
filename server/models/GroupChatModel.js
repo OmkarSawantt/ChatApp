@@ -24,7 +24,6 @@ const groupMessageSchema=new mongoose.Schema({
       ref: 'User'
     }
   ],
-
 },{
   timestamps:true
 })
@@ -40,6 +39,10 @@ const groupChatSchema=new mongoose.Schema({
       required:true,
       ref:'User'
   },
+  profile_pic:{
+    type:String,
+    default:"https://firebasestorage.googleapis.com/v0/b/uploadingfile-1f51f.appspot.com/o/ChatApp%2Ff5.png?alt=media&token=f52d2481-b3b9-4130-a274-070bb18b3da3"
+  },
   members:[
     {
       type:mongoose.Schema.ObjectId,
@@ -49,7 +52,7 @@ const groupChatSchema=new mongoose.Schema({
   messages:[
       {
           type:mongoose.Schema.ObjectId,
-          ref:'Message'
+          ref:'GroupMessage'
       }
   ]
 },{
