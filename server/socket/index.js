@@ -15,7 +15,7 @@ const { log } = require('console')
 const server=http.createServer(app)
 const io=new Server(server,{
   cors: {
-    origin: ['https://sonorous.vercel.app', 'http://localhost:3000'],
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true,
   },
