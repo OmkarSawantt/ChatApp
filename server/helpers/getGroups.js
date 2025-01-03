@@ -12,6 +12,7 @@ const getGroups =async(currentUserId)=>{
           select: 'name email',
         },
       })
+      .sort({updatedAt:-1})
       .populate('createdBy', 'name email')
       .populate('members', 'name email')
       .exec();
