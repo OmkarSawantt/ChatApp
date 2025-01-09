@@ -1,7 +1,4 @@
 const User = require("../models/UserModel");
-const { storage } = require('../firebase');
-const { ref, uploadBytes, getDownloadURL, deleteObject } = require('firebase/storage');
-const { v4: uuid } = require("uuid")
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
@@ -152,7 +149,7 @@ const logout = async (req, res) => {
 //update profile_pic
 const updateProfilePic = async (req, res) => {
     try {
-        const { profile_pic } = req.files;
+        const { profile_pic } = req.body;
         const token = req.cookies.token || ""
         const userID = await getUserDetailsFromToken(token)
         if (!profile_pic) {
@@ -161,36 +158,10 @@ const updateProfilePic = async (req, res) => {
                 error: true
             })
         }
-        let updateUser;
-        let downloadURL;
-        if (userID) {
-            const userInfo = await User.findById(userID)
-            const oldProfilePic = userInfo.profile_pic
-            //Delete Previous Profile pic
-            if (oldProfilePic !== process.env.DEFAUL_AVTAR_URI) {
-                const pathStart = oldProfilePic.indexOf("/o/") + 3;
-                const pathEnd = oldProfilePic.indexOf("?alt=");
-                const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
-                const fileRef = ref(storage, filePath);
-                await deleteObject(fileRef);
-            }
-
-            //Insert new Profile pic
-            const filename = profile_pic.name;
-            const spittedFilename = filename.split('.')
-            const newName = spittedFilename[0] + uuid() + "." + spittedFilename[spittedFilename.length - 1]
-            const imageRef = ref(storage, `ChatApp/${newName}`);
-            const metadata = {
-                contentType: profile_pic.mimetype,
-            };
-            const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
-            downloadURL = await getDownloadURL(snapshot.ref);
-            updateUser = await User.updateOne({ _id: userID }, { profile_pic: downloadURL })
-
-        }
+        const updateUser=await User.findByIdAndUpdate(userID,{ profile_pic: profile_pic },{ new: true })
         return res.json({
             message: "Profile Pic is Updated",
-            data: { profile_pic: downloadURL },
+            data: { user: updateUser },
             success: true
         })
     } catch (error) {
@@ -266,49 +237,5 @@ const searchUser = async (req, res) => {
     }
 }
 
-const imageUpload = async (req, res) => {
-    try {
-        const { image } = req.files;
-        let downloadURL;
 
-        const filename = image.name;
-        const spittedFilename = filename.split('.')
-        const newName = spittedFilename[0] + uuid() + "." + spittedFilename[spittedFilename.length - 1]
-        const imageRef = ref(storage, `ChatApp/messages/${newName}`);
-        const metadata = {
-            contentType: image.mimetype,
-        };
-        const snapshot = await uploadBytes(imageRef, image.data, metadata);
-        downloadURL = await getDownloadURL(snapshot.ref);
-        return res.json({
-            message: "Image Uploaded",
-            data: { URL: downloadURL },
-            success: true
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || error,
-            error: true
-        })
-    }
-}
-const imageDelete = async (req, res) => {
-    try {
-        const { imageUrl } = req.body;
-        const pathStart = imageUrl.indexOf("/o/") + 3;
-        const pathEnd = imageUrl.indexOf("?alt=");
-        const filePath = decodeURIComponent(imageUrl.substring(pathStart, pathEnd));
-        const fileRef = ref(storage, filePath);
-        await deleteObject(fileRef);
-        return res.json({
-            message: "Image Deleted",
-            success: true
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || error,
-            error: true
-        })
-    }
-}
-module.exports = { registerUser, cheackEmail, checkPassword, userDetails, logout, updateProfilePic, updateUser, searchUser, imageUpload, imageDelete }
+module.exports = { registerUser, cheackEmail, checkPassword, userDetails, logout, updateProfilePic, updateUser, searchUser }

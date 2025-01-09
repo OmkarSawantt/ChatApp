@@ -195,7 +195,7 @@ const Slidebar = () => {
                 return (
                   <NavLink to={'/home/' + conv?.userDetails?._id} key={index} className='flex items-center gap-2 px-2 py-3 border-b border border-b-slate-400 hover:border-primary hover:border hover:bg-slate-200 rounded cursor-pointer'>
                     <div>
-                      <Avatar imageUrl={conv.userDetails.profile_pic} name={conv.userDetails.name} width={50} height={50} />
+                      <Avatar imageUrl={conv.userDetails.profile_pic} userId={conv?.userDetails?._id} name={conv.userDetails.name} width={50} height={50} />
                     </div>
                     <div>
                       <h3 className='text-ellipsis line-clamp-1 font-semibold'>{conv?.userDetails?.name}</h3>

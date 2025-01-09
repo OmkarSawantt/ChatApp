@@ -7,7 +7,6 @@ import { RiMenu3Fill } from "react-icons/ri";
 import { MdOutlineArrowBack } from "react-icons/md";
 import { IoAttachSharp } from "react-icons/io5";
 import { IoMdImage, IoMdVideocam } from "react-icons/io";
-import { imageDelete, imageUpload } from '../Actions/UserActions';
 import { SocketContext } from '../redux/SocketContext';
 import Loader from './Loader';
 import { IoSendSharp } from "react-icons/io5";
@@ -64,27 +63,22 @@ const GroupChat = () => {
   const handleUploadImage = async (e) => {
     const file = e.target.files[0]
     setLoading(true)
-    const imageData = new FormData();
-    imageData.append('image', file);
-    const res = await imageUpload(imageData)
-    setMessage(preve => {
-      return {
-        ...preve,
-        imageUrl: res.data.URL
-      }
-    })
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setMessage(preve => {
+          return {
+            ...preve,
+            imageUrl: reader.result
+          }
+        })
+      };
+    }
     setOpenUpload(false)
     setLoading(false)
   }
   const handleClearUploadImage = async (e) => {
-    const body = {
-      imageUrl: message.imageUrl
-    }
-    const res = await imageDelete(body)
-
-    if (res.success) {
-      e.target.value = null;
-    }
     setMessage(preve => {
       return {
         ...preve,
@@ -95,25 +89,22 @@ const GroupChat = () => {
   const handleUploadVideo = async (e) => {
     const file = e.target.files[0]
     setLoading(true)
-    const videoData = new FormData();
-    videoData.append('image', file);
-    const res = await imageUpload(videoData)
-    setMessage(preve => {
-      return {
-        ...preve,
-        videoUrl: res.data.URL
-      }
-    })
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setMessage(preve => {
+          return {
+            ...preve,
+            videoUrl: reader.result
+          }
+        })
+      };
+    }
     setOpenUpload(false)
     setLoading(false)
   }
   const handleClearUploadVideo = async (e) => {
-    const imageData = new FormData();
-    imageData.append('imageUrl', message.videoUrl);
-    const res = await imageDelete(imageData)
-    if (res.success) {
-      e.target.value = null;
-    }
     setMessage(preve => {
       return {
         ...preve,

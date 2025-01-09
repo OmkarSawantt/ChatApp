@@ -77,15 +77,17 @@ export const logoutUser = async () => {
 };
 
 // Update Profile Picture
+
 export const updateProfilePic = async (formData) => {
   try {
     const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/update-user-profile`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
+        'Content-Type': 'application/json', // JSON header
       },
-      body: formData,
-      credentials: 'include'
+      body: JSON.stringify(formData), // Convert object to JSON
+      credentials: 'include',
     });
     return await res.json();
   } catch (err) {
@@ -121,39 +123,6 @@ export const searchUserAction=async (userData)=>{
         'Content-type': 'application/json'
       },
       body: JSON.stringify(userData),
-      credentials: 'include'
-    });
-    return await res.json();
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export const imageUpload = async (formData) => {
-  try {
-    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/image`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-
-      },
-      body: formData,
-      credentials: 'include'
-    });
-    return await res.json();
-  } catch (err) {
-    console.log(err);
-  }
-};
-export const imageDelete=async (formData)=>{
-  try {
-    const res = await fetch(`${process.env.REACT_APP_ENDPOINT_URL}/api/image-delete`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(formData),
       credentials: 'include'
     });
     return await res.json();

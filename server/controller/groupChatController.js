@@ -1,8 +1,5 @@
 const { GroupChatModel } = require("../models/GroupChatModel")
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
-const { storage } = require('../firebase');
-const { ref, uploadBytes, getDownloadURL, deleteObject } = require('firebase/storage');
-const { v4: uuid } = require("uuid")
 const createGroup= async(req,res)=>{
   try {
     const token=req.cookies.token || ""
@@ -97,7 +94,7 @@ const editName=async(req,res)=>{
 const editProfilePic=async (req,res) => {
   try {
     const  groupID=req.params.id;
-    const {profile_pic}=req.files;
+    const { profile_pic } = req.body;
     const token=req.cookies.token || ""
     if(!token){
       return res.json({
@@ -125,27 +122,7 @@ const editProfilePic=async (req,res) => {
         success: false,
       });
     }
-    let downloadURL;
-    const oldProfilePic=group.profile_pic
-    if(oldProfilePic!==process.env.DEFAUL_GROUP_AVATAR){
-      const pathStart = oldProfilePic.indexOf("/o/") + 3;
-      const pathEnd = oldProfilePic.indexOf("?alt=");
-      const filePath = decodeURIComponent(oldProfilePic.substring(pathStart, pathEnd));
-      const fileRef = ref(storage, filePath);
-      await deleteObject(fileRef);
-    }
-
-    const filename = profile_pic.name;
-    const spittedFilename = filename.split('.')
-    const newName = spittedFilename[0] + uuid() + "." + spittedFilename[spittedFilename.length - 1]
-    const imageRef = ref(storage, `ChatApp/${newName}`);
-    const metadata = {
-      contentType: profile_pic.mimetype,
-    };
-    const snapshot = await uploadBytes(imageRef, profile_pic.data, metadata);
-    downloadURL = await getDownloadURL(snapshot.ref);
-
-    group.profile_pic=downloadURL
+    group.profile_pic=profile_pic
     await group.save();
 
     return res.status(200).json({

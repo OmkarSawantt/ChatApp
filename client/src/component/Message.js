@@ -7,7 +7,6 @@ import { MdOutlineArrowBack } from "react-icons/md";
 import { IoAttachSharp } from "react-icons/io5";
 import { IoMdImage, IoMdVideocam } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
-import { imageDelete, imageUpload } from '../Actions/UserActions';
 import Loader from './Loader';
 import wallapaper from '../Assets/wallapaper.jpeg'
 import { IoSendSharp } from "react-icons/io5";
@@ -54,29 +53,22 @@ const Message = () => {
   const handleUploadImage = async (e) => {
     const file = e.target.files[0]
     setLoading(true)
-    const imageData = new FormData();
-    imageData.append('image', file);
-    const res = await imageUpload(imageData)
-    setMessage(preve => {
-      return {
-        ...preve,
-        imageUrl: res.data.URL
-      }
-    })
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setMessage(preve => {
+          return {
+            ...preve,
+            imageUrl: reader.result
+          }
+        })
+      };
+    }
     setOpenUpload(false)
     setLoading(false)
   }
   const handleClearUploadImage = async (e) => {
-    console.log(message.imageUrl);
-    const body = {
-      imageUrl: message.imageUrl
-    }
-    const res = await imageDelete(body)
-    console.log(res);
-
-    if (res.success) {
-      e.target.value = null;
-    }
     setMessage(preve => {
       return {
         ...preve,
@@ -87,26 +79,22 @@ const Message = () => {
   const handleUploadVideo = async (e) => {
     const file = e.target.files[0]
     setLoading(true)
-    const videoData = new FormData();
-    videoData.append('image', file);
-    const res = await imageUpload(videoData)
-    setMessage(preve => {
-      return {
-        ...preve,
-        videoUrl: res.data.URL
-      }
-    })
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setMessage(preve => {
+          return {
+            ...preve,
+            videoUrl: reader.result
+          }
+        })
+      };
+    }
     setOpenUpload(false)
     setLoading(false)
   }
   const handleClearUploadVideo = async (e) => {
-    const imageData = new FormData();
-    imageData.append('imageUrl', message.videoUrl);
-    const res = await imageDelete(imageData)
-    console.log(res);
-    if (res.success) {
-      e.target.value = null;
-    }
     setMessage(preve => {
       return {
         ...preve,
@@ -125,8 +113,6 @@ const Message = () => {
       socketConnection.on('message', (userId,data) => {
         if(userId===paramUserId){
           setAllMessages(data)
-        }else{
-          console.log(data[data.length-1]);
         }
       })
     }
@@ -219,7 +205,7 @@ const Message = () => {
                         />
                       )}
                     </div>
-                    <p className="px-2 text-2xl">{msg.text}</p>
+                    <p className="px-2 text-lg lg:text-2xl">{msg.text}</p>
                     <p className="text-xs w-fit ml-auto">
                       {moment(msg.createdAt).format('hh:mm A')}
                     </p>

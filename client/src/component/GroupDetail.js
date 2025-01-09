@@ -58,6 +58,19 @@ const navigate = useNavigate()
     let editSuccess
     try {
       if(avatar!==groupData.profile_pic){
+        const reader = new FileReader();
+        reader.readAsDataURL(avatar);
+        reader.onloadend = async () => {
+          const base64Image =reader.result;
+          const res=await editProfilePic(groupId,{profile_pic:base64Image})
+          if(res.success){
+            editSuccess=true
+          }else{
+            editSuccess=false
+            toast.error(res.message)
+            return
+          }
+        }
         const imageData = new FormData();
         imageData.append('profile_pic', avatar);
         const res=await editProfilePic(groupId,imageData)
