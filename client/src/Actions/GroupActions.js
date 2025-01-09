@@ -36,8 +36,9 @@ export const editProfilePic = async (groupID, data) => {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-      body: data,
+      body: JSON.stringify(data),
       credentials: 'include'
     });
     return await res.json();

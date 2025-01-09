@@ -102,12 +102,6 @@ const editProfilePic=async (req,res) => {
         logout:true,
       })
     }
-    if(!profile_pic){
-      return res.status(500).json({
-          message:"Image not found",
-          error:true
-      })
-    }
     const userID=await getUserDetailsFromToken(token)
     const group = await GroupChatModel.findById(groupID);
     if (!group) {

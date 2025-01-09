@@ -5,7 +5,7 @@ const Avatar = ({userId,name,imageUrl,width,height}) => {
   const onlineUser=useSelector(state=>state?.user?.onlineUser)
   const isOnline=onlineUser.includes(userId)
   return (
-    <div className={`text-slate-800  rounded-full font-bold relative border-2 border-slate-200`} style={{width : width+"px", height : height+"px" }}>
+    <div className={`text-slate-800  rounded-full font-bold relative border-2 bg-white border-slate-200`} style={{width : width+"px", height : height+"px" }}>
         {
                 <img
                     src={imageUrl}
