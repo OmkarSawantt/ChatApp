@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { TbMessageFilled } from "react-icons/tb";
 import { MdGroups, MdGroupAdd } from "react-icons/md";
 import { FaUserPlus } from "react-icons/fa";
-import { NavLink, useNavigate, useLocation, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import Avatar from './Avatar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ import SearchUser from './SearchUser';
 import { SocketContext } from '../redux/SocketContext';
 import { IoMdImage, IoMdVideocam } from "react-icons/io";
 import AddGroup from './AddGroup';
+import { decryptLargeMessage } from '../utils/cryptoUtils';
 const Slidebar = () => {
   const user = useSelector(state => state?.user)
   const dispatch = useDispatch()
@@ -24,7 +25,6 @@ const Slidebar = () => {
   const [openSearchUser, setOpenSearchUser] = useState(false)
   const [addGroupbox, setaddGroupbox] = useState(false)
   const socketConnection = useContext(SocketContext);
-  const { userId, groupId } = useParams();
   const location = useLocation();
   const isHomePage = location.pathname.startsWith("/home");
   const isGroupPage = location.pathname.startsWith("/group");
@@ -56,8 +56,8 @@ const Slidebar = () => {
           }
         });
 
-        const userUnseenCount = conversationUserData .reduce((count, conv) => {
-          if(conv?.unseenMsg!==0 && conv?.lastMsg?.msgByUserID.toString()!==user._id){
+        const userUnseenCount = conversationUserData.reduce((count, conv) => {
+          if(conv?.unseenMsg!==0 && conv?.lastMsg?.sender.toString()!==user._id){
             toast(`You have a new message from ${conv.userDetails.name}`, {
               icon: 'ℹ️',
               duration: 2000,
@@ -202,23 +202,27 @@ const Slidebar = () => {
                       <div className='text-slate-500 text-sm flex items-center gap-1 '>
                         <div>
                           {
-                            conv?.lastMsg?.imageUrl && (
+                            conv?.lastMsg?.image && (
                               <div className='flex items-center gap-1'>
                                 <span><IoMdImage /></span>
-                                {!conv?.lastMsg?.text && <span>Image</span>}
+                                {!conv?.lastMsg?.messageText && <span>Image</span>}
                               </div>
                             )
                           }
                           {
-                            conv?.lastMsg?.videoUrl && (
+                            conv?.lastMsg?.video && (
                               <div className='flex items-center gap-1'>
                                 <span><IoMdVideocam /></span>
-                                {!conv?.lastMsg?.text && <span>Video</span>}
+                                {!conv?.lastMsg?.messageText && <span>Video</span>}
                               </div>
                             )
                           }
                         </div>
-                        <p className='text-ellipsis line-clamp-1'>{conv?.lastMsg?.text}</p>
+                        {
+                          conv?.lastMsg?.messageText!==''  && (
+                            <p className='text-ellipsis line-clamp-1'>{conv?.lastMsg?.sender===user._id ? decryptLargeMessage(user.private_key,conv?.lastMsg?.senderText):decryptLargeMessage(user.private_key,conv?.lastMsg?.messageText)}</p>
+                          )
+                        }
                       </div>
                     </div>
                     {
@@ -241,23 +245,23 @@ const Slidebar = () => {
                           <p>{group?.lastMessage?.msgByUserID?.name+':'}</p>
                           <div className='h-full flex items-center'>
                             {
-                              group?.lastMessage?.imageUrl && (
+                              group?.lastMessage?.image && (
                                 <div className='flex items-center h-full gap-1'>
                                   <span className='-mb-1'><IoMdImage /></span>
-                                  {!group?.lastMessage?.text && <span>Image</span>}
+                                  {!group?.lastMessage?.messageText && <span>Image</span>}
                                 </div>
                               )
                             }
                             {
-                              group?.lastMessage?.videoUrl && (
+                              group?.lastMessage?.video && (
                                 <div className='flex items-center gap-1'>
                                   <span className='-mb-1'><IoMdVideocam /></span>
-                                  {!group?.lastMessage?.text && <span>Video</span>}
+                                  {!group?.lastMessage?.messageText && <span>Video</span>}
                                 </div>
                               )
                             }
                           </div>
-                          <p className='text-ellipsis line-clamp-1'>{group?.lastMessage?.text}</p>
+                          <p className='text-ellipsis line-clamp-1'>{decryptLargeMessage(group.private_key,group?.lastMessage?.messageText)}</p>
                         </div>
                       </div>
                       {

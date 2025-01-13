@@ -11,8 +11,9 @@ import Loader from './Loader';
 import wallapaper from '../Assets/wallapaper.jpeg'
 import { IoSendSharp } from "react-icons/io5";
 import { SocketContext } from '../redux/SocketContext';
-import moment from 'moment'
 import UserDetail from './UserDetail';
+import { decryptLargeMessage, encryptLargeMessage } from '../utils/cryptoUtils';
+import MessagesList from './MessagesList';
 const Message = () => {
   const param = useParams()
   const [paramUserId, setParamUserId] = useState();
@@ -24,7 +25,8 @@ const Message = () => {
     profile_pic: '',
     online: false,
     _id: '',
-    createdAt: ''
+    createdAt: '',
+    public_Key:''
   })
   const [openUpload, setOpenUpload] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -35,12 +37,6 @@ const Message = () => {
     videoUrl: ''
   })
   const [allMessages, setAllMessages] = useState([])
-  const currentMessage = useRef()
-  useEffect(() => {
-    if (currentMessage.current) {
-      currentMessage.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    }
-  }, [allMessages])
   useEffect(()=>{
     setParamUserId(param.userId)
   },[param.userId ,paramUserId])
@@ -78,6 +74,11 @@ const Message = () => {
   }
   const handleUploadVideo = async (e) => {
     const file = e.target.files[0]
+      const maxSize = 10 * 1024 * 1024; // 10 MB limit
+  if (file && file.size > maxSize) {
+    alert("File size exceeds 10 MB");
+    return;
+  }
     setLoading(true)
     if (file) {
       const reader = new FileReader();
@@ -112,6 +113,7 @@ const Message = () => {
       })
       socketConnection.on('message', (userId,data) => {
         if(userId===paramUserId){
+          socketConnection.emit('seen', paramUserId)
           setAllMessages(data)
         }
       })
@@ -127,23 +129,100 @@ const Message = () => {
       }
     })
   }
-  const handleSendMessage = (e) => {
-    e.preventDefault()
-    if (message.text || message.imageUrl || message.videoUrl) {
-      if (socketConnection) {
-        socketConnection.emit('new message', {
-          sender: user?._id,
-          receiver: param.userId,
-          text: message.text,
-          imageUrl: message.imageUrl,
-          videoUrl: message.videoUrl
-        })
-        setMessage({
-          text: '',
-          imageUrl: '',
-          videoUrl: ''
-        })
+  const handleSendMessage = async(e) => {
+    try {
+      e.preventDefault()
+      if (message.text || message.imageUrl || message.videoUrl) {
+        if (socketConnection) {
+          if (!message.imageUrl && !message.videoUrl) {
+            const [
+              messageText,
+              senderText,
+              image,
+              senderImage,
+              video,
+              senderVideo
+            ] = await Promise.all([
+              encryptLargeMessage(userData.public_Key, message.text),
+              encryptLargeMessage(user.public_key, message.text),
+              '',
+              '',
+              '',
+              ''
+            ]);
+            socketConnection.emit('new message', {
+              sender: user?._id,
+              receiver: param.userId,
+              messageText: messageText,
+              senderText: senderText,
+              image: image,
+              senderImage: senderImage,
+              video: video,
+              senderVideo: senderVideo,
+            })
+          }else if(!message.videoUrl){
+            const [
+              messageText,
+              senderText,
+              image,
+              senderImage,
+              video,
+              senderVideo
+            ] = await Promise.all([
+              encryptLargeMessage(userData.public_Key, message.text),
+              encryptLargeMessage(user.public_key, message.text),
+              encryptLargeMessage(userData.public_Key, message.imageUrl),
+              encryptLargeMessage(user.public_key, message.imageUrl),
+              '',
+              ''
+            ]);
+            socketConnection.emit('new message', {
+              sender: user?._id,
+              receiver: param.userId,
+              messageText: messageText,
+              senderText: senderText,
+              image: image,
+              senderImage: senderImage,
+              video: video,
+              senderVideo: senderVideo,
+            })
+          }else if(!message.imageUrl){
+            const [
+              messageText,
+              senderText,
+              image,
+              senderImage,
+              video,
+              senderVideo
+            ] = await Promise.all([
+              encryptLargeMessage(userData.public_Key, message.text),
+              encryptLargeMessage(user.public_key, message.text),
+              '',
+              '',
+              encryptLargeMessage(userData.public_Key, message.videoUrl),
+              encryptLargeMessage(user.public_key, message.videoUrl),
+            ]);
+            socketConnection.emit('new message', {
+              sender: user?._id,
+              receiver: param.userId,
+              messageText: messageText,
+              senderText: senderText,
+              image: image,
+              senderImage: senderImage,
+              video: video,
+              senderVideo: senderVideo,
+            })
+          }
+          setMessage({
+            text: '',
+            imageUrl: '',
+            videoUrl: ''
+          })
+        }
       }
+    } catch (error) {
+      console.log(error);
+
     }
   }
   return (
@@ -171,50 +250,8 @@ const Message = () => {
       </header>
 
       <section className='h-[calc(100vh-136px)] overflow-x-hidden overflow-y-auto scrollbar relative bg-slate-200 bg-opacity-75'>
-        <div ref={currentMessage} className='flex flex-col gap-2 py-2 mx-2'>
-          {
-            allMessages.map((msg, index) => {
-              const showDate = index === 0 || moment(msg.createdAt).format('YYYY-MM-DD') !== moment(allMessages[index - 1]?.createdAt).format('YYYY-MM-DD');
 
-              return (
-                <React.Fragment key={index}>
-                  {showDate && (
-                    <div className="text-center text-sm text-black py-1 bg-slate-100 mx-auto p-4 rounded-xl">
-                      {moment(msg.createdAt).calendar(null, {
-                        sameDay: '[Today]',
-                        lastDay: '[Yesterday]',
-                        lastWeek: 'dddd, MMM D',
-                        sameElse: 'MMMM D, YYYY',
-                      })}
-                    </div>
-                  )}
-                  <div className={`p-1 py-1 rounded w-fit min-w-40 max-w-[200px] md:max-w-sm lg:max-w-md ${user._id === msg.msgByUserID ? 'ml-auto bg-secondary text-white' : 'bg-white'}`}>
-                    <div className="w-full">
-                      {msg?.imageUrl && (
-                        <img
-                          src={msg?.imageUrl}
-                          alt="Uploaded"
-                          className="w-full h-full object-scale-down"
-                        />
-                      )}
-                      {msg?.videoUrl && (
-                        <video
-                          src={msg?.videoUrl}
-                          className="w-full h-full object-scale-down"
-                          controls
-                        />
-                      )}
-                    </div>
-                    <p className="px-2 text-lg lg:text-2xl">{msg.text}</p>
-                    <p className="text-xs w-fit ml-auto">
-                      {moment(msg.createdAt).format('hh:mm A')}
-                    </p>
-                  </div>
-                </React.Fragment>
-              )
-            })
-          }
-        </div>
+        <MessagesList allMessages={allMessages} user={user}  decryptLargeMessage={decryptLargeMessage} />
         {
           message.imageUrl && (
             <div className='w-full h-full  sticky bottom-0  bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden'>
@@ -234,7 +271,7 @@ const Message = () => {
                 <IoClose size={30} />
               </div>
               <div className='bg-white p-3'>
-                <video src={message.videoUrl} controls muted autoPlay className='aspect-video w-full h-full max-w-sm m-2' >Your browser does not support the video tag.</video>
+                <video src={message.videoUrl} controls  autoPlay className='aspect-video w-full h-full max-w-sm m-2' >Your browser does not support the video tag.</video>
               </div>
             </div>
           )

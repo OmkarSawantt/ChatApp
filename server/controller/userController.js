@@ -1,7 +1,9 @@
 const User = require("../models/UserModel");
 const bcryptjs = require('bcryptjs')
+const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
+const { encryptData, decryptData , generateKeyPair } = require("../helpers/cryptoUtilsServer");
 
 //register
 const registerUser = async (req, res) => {
@@ -17,10 +19,15 @@ const registerUser = async (req, res) => {
         const salt = await bcryptjs.genSalt(10)
         const hashedPassword = await bcryptjs.hash(password, salt)
 
+        const { publicKey, privateKey } = generateKeyPair();
+        const private_key=encryptData(privateKey)
+
         const payLoad = {
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            public_key:publicKey,
+            private_key
         }
         const user = new User(payLoad)
         const userSave = await user.save()
@@ -116,9 +123,13 @@ const userDetails = async (req, res) => {
         }
         const userID = await getUserDetailsFromToken(token)
         const user = await User.findById(userID).select('-password')
+        const decryptedPrivateKey = decryptData(user.private_key);
         return res.status(200).json({
             message: "User Details",
-            data: user
+            data: {
+                ...user.toObject(),
+                private_key: decryptedPrivateKey,
+            },
         })
     } catch (error) {
         return res.status(500).json({

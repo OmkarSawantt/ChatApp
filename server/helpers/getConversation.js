@@ -12,7 +12,7 @@ const getConversation=async(currentUserId)=>{
 
     const conversation=currentUserConversation.map((conv)=>{
       const countUnseenMsg=conv.messages.reduce((preve, curr) =>{
-        const msgByUserID=curr?.msgByUserID?.toString();
+        const msgByUserID=curr?.sender?.toString();
         if(msgByUserID !==currentUserId){
           return preve+(curr?.seen ? 0 :1)
         }else{

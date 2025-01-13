@@ -9,7 +9,8 @@ const { ConversationModel, MessageModel } = require('../models/ConversationModel
 const app=express()
 const getConversation =require('../helpers/getConversation')
 const getGroups = require('../helpers/getGroups')
-const { GroupChatModel, GroupMessageModel } = require('../models/GroupChatModel')
+const { GroupChatModel, GroupMessageModel } = require('../models/GroupChatModel');
+const { decryptData } = require('../helpers/cryptoUtilsServer');
 /* Socket Connection */
 
 const server=http.createServer(app)
@@ -19,6 +20,7 @@ const io=new Server(server,{
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  maxHttpBufferSize: 1e8
 })
 const onlineUser=new Set()
 
@@ -42,7 +44,8 @@ io.on('connection',async(socket)=>{
       email:userDetails?.email,
       profile_pic:userDetails?.profile_pic,
       online:onlineUser.has(userId),
-      createdAt:userDetails?.createdAt
+      createdAt:userDetails?.createdAt,
+      public_Key:userDetails?.public_key
     }
     socket.emit('message-user',payload)
     const getConversationMessages=await ConversationModel.findOne({
@@ -61,6 +64,20 @@ io.on('connection',async(socket)=>{
         select: 'name email',
       },
     }).sort({updatedAt:-1});
+    const groupData=await  await GroupChatModel.findById(groupID).select('-messages').populate({
+      path: "members",
+      select: "-password",
+    }).populate({
+      path: "createdBy",
+      select: "-password",
+    });
+
+    const decryptedPrivateKey = decryptData(groupData.private_key);
+    const finalGroupData = {
+      ...groupData.toObject(),
+      private_key: decryptedPrivateKey,
+    };
+    socket.emit('group-data',finalGroupData)
     socket.emit('group-message',groupID, getGroupMessages?.messages || []);
   })
   socket.on('new-group-message', async (groupId, messageData) => {
@@ -119,12 +136,14 @@ io.on('connection',async(socket)=>{
       });
       conversation = await createConversation.save();
     }
-
     const message = new MessageModel({
-      text: data.text,
-      imageUrl: data.imageUrl,
-      videoUrl: data.videoUrl,
-      msgByUserID: data?.sender
+      messageText:data.messageText,
+      senderText:data.senderText,
+      image:data.image,
+      senderImage:data.senderImage,
+      video:data.video,
+      senderVideo:data.senderVideo,
+      sender: data?.sender
     });
     const saveMessage = await message.save();
 
@@ -173,7 +192,7 @@ io.on('connection',async(socket)=>{
     const conversationMessageID=conversation?.messages || []
 
     const updateMsg=await MessageModel.updateMany(
-      { _id : {"$in" : conversationMessageID} , msgByUserID : msgByUserId},
+      { _id : {"$in" : conversationMessageID} , sender : msgByUserId},
       { "$set" : { seen : true}}
     )
     const conversationSender=await getConversation(user)

@@ -8,30 +8,36 @@ import { useSelector } from 'react-redux';
 export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
+
   const [socketConnection, setSocketConnection] = useState(null);
   const user=useSelector(state=>state.user)
   useEffect(() => {
+    try {
     if(user){
 
       const socket = io(process.env.REACT_APP_ENDPOINT_URL, {
         auth: {
-        token: localStorage.getItem('token'),
-      },
-    });
+          token: localStorage.getItem('token'),
+        },
+      });
 
-    socket.on('connect', () => {
-      console.log('Connected to socket');
-    });
-    socket.on('disconnect', () => {
-      console.log('Disconnected from socket');
-    });
+      socket.on('connect', () => {
+        console.log('Connected to socket');
+      });
+      socket.on('disconnect', () => {
+        console.log('Disconnected from socket');
+      });
 
-    setSocketConnection(socket);
+      setSocketConnection(socket);
 
-    // Cleanup when component is unmounted
-    return () => {
-      socket.disconnect();
-    };
+      // Cleanup when component is unmounted
+      return () => {
+        socket.disconnect();
+      };
+    }
+  } catch (error) {
+    console.log(error);
+
   }
   },[]);
 

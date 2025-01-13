@@ -1,5 +1,6 @@
 const { GroupChatModel } = require("../models/GroupChatModel")
 const getUserDetailsFromToken = require("../helpers/getUserDetailsFromToken");
+const { generateKeyPair, encryptData } = require("../helpers/cryptoUtilsServer");
 const createGroup= async(req,res)=>{
   try {
     const token=req.cookies.token || ""
@@ -12,10 +13,14 @@ const createGroup= async(req,res)=>{
     const userID=await getUserDetailsFromToken(token)
     const groupName=req.body.name
     const groupMembers=req.body.members
+    const { publicKey, privateKey } = generateKeyPair();
+    const private_key=encryptData(privateKey)
     const payLoad={
       name:groupName,
       createdBy:userID,
       members:groupMembers,
+      public_key:publicKey,
+      private_key:private_key,
       messages:[]
     }
     if (!Array.isArray(groupMembers)) {
